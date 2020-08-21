@@ -1,7 +1,7 @@
-function updateMediaAudioSettings(mediaVideo, settings) {
+function updateMediaAudioSettings(mediaVideo, settings, globalRolloffFactor) {
   mediaVideo.el.setAttribute("media-video", {
     distanceModel: settings.mediaDistanceModel,
-    rolloffFactor: settings.mediaRolloffFactor,
+    rolloffFactor: settings.mediaRolloffFactor * globalRolloffFactor,
     refDistance: settings.mediaRefDistance,
     maxDistance: settings.mediaMaxDistance,
     coneInnerAngle: settings.mediaConeInnerAngle,
@@ -10,13 +10,13 @@ function updateMediaAudioSettings(mediaVideo, settings) {
   });
 }
 
-function updateAvatarAudioSettings(avatarAudioSource, settings, positional) {
+function updateAvatarAudioSettings(avatarAudioSource, settings, positional, globalRolloffFactor) {
   avatarAudioSource.el.setAttribute("avatar-audio-source", {
     positional,
     distanceModel: settings.avatarDistanceModel,
     maxDistance: settings.avatarMaxDistance,
     refDistance: settings.avatarRefDistance,
-    rolloffFactor: settings.avatarRolloffFactor
+    rolloffFactor: settings.avatarRolloffFactor * globalRolloffFactor
   });
 }
 
@@ -49,11 +49,20 @@ export class AudioSettingsSystem {
         preferences: { audioOutputMode: "panner" }
       });
     }
+    if (window.APP.store.state.preferences.globalRolloffFactor !== 1.0) {
+      //hack to always reset to 1.0
+      window.APP.store.update({
+        preferences: { globalRolloffFactor: 1.0 }
+      });
+    }
+
     this.audioOutputMode = window.APP.store.state.preferences.audioOutputMode;
+    this.globalRolloffFactor = window.APP.store.state.preferences.globalRolloffFactor;
     this.onPreferenceChanged = () => {
-      const newPref = window.APP.store.state.preferences.audioOutputMode;
-      const shouldUpdateAudioSettings = this.audioOutputMode !== newPref;
-      this.audioOutputMode = newPref;
+      const { audioOutputMode, globalRolloffFactor } = window.APP.store.state.preferences;
+      const shouldUpdateAudioSettings = this.audioOutputMode !== audioOutputMode || this.globalRolloffFactor !== globalRolloffFactor;
+      this.audioOutputMode = audioOutputMode;
+      this.globalRolloffFactor = globalRolloffFactor;
       if (shouldUpdateAudioSettings) {
         this.updateAudioSettings(this.audioSettings);
       }
@@ -66,7 +75,7 @@ export class AudioSettingsSystem {
     if (index === -1) {
       this.mediaVideos.push(mediaVideo);
     }
-    updateMediaAudioSettings(mediaVideo, this.audioSettings);
+    updateMediaAudioSettings(mediaVideo, this.audioSettings, this.globalRolloffFactor);
   }
 
   unregisterMediaAudioSource(mediaVideo) {
@@ -79,7 +88,7 @@ export class AudioSettingsSystem {
       this.avatarAudioSources.push(avatarAudioSource);
     }
     const positional = window.APP.store.state.preferences.audioOutputMode !== "audio";
-    updateAvatarAudioSettings(avatarAudioSource, this.audioSettings, positional);
+    updateAvatarAudioSettings(avatarAudioSource, this.audioSettings, positional, this.globalRolloffFactor);
   }
 
   unregisterAvatarAudioSource(avatarAudioSource) {
@@ -93,12 +102,12 @@ export class AudioSettingsSystem {
     this.audioSettings = Object.assign({}, this.defaultSettings, settings);
 
     for (const mediaVideo of this.mediaVideos) {
-      updateMediaAudioSettings(mediaVideo, settings);
+      updateMediaAudioSettings(mediaVideo, settings, this.globalRolloffFactor);
     }
 
     const positional = window.APP.store.state.preferences.audioOutputMode !== "audio";
     for (const avatarAudioSource of this.avatarAudioSources) {
-      updateAvatarAudioSettings(avatarAudioSource, settings, positional);
+      updateAvatarAudioSettings(avatarAudioSource, settings, positional, this.globalRolloffFactor);
     }
   }
 

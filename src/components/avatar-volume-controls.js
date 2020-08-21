@@ -50,14 +50,18 @@ AFRAME.registerComponent("avatar-volume-controls", {
         return;
       }
 
-      const { audioOutputMode, globalVoiceVolume } = window.APP.store.state.preferences;
+      const { audioOutputMode, globalVoiceVolume, globalRolloffFactor } = window.APP.store.state.preferences;
       const volumeModifier = (globalVoiceVolume !== undefined ? globalVoiceVolume : 100) / 100;
       let gain = volumeModifier * this.data.volume;
       if (audioOutputMode === "audio") {
         this.avatarAudioSource.el.object3D.getWorldPosition(positionA);
         this.el.sceneEl.camera.getWorldPosition(positionB);
         const squaredDistance = positionA.distanceToSquared(positionB);
-        gain = gain * Math.min(1, 10 / Math.max(1, squaredDistance));
+        const distanceBasedAttenuation = Math.min(1, 10 / Math.max(1, squaredDistance));
+        const rolloffFactor = globalRolloffFactor !== undefined ? globalRolloffFactor : 1.0;
+        // Clamp rolloffFactor to [0.0, 1.0]
+        gain = gain * (1.0 + Math.max(0.0, Math.min(1.0, rolloffFactor)) *
+          (distanceBasedAttenuation - 1.0));
       }
 
       audio.gain.gain.value = gain;

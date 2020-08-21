@@ -70,6 +70,7 @@ export const SCHEMA = {
         preferredCamera: { type: "string" },
         muteMicOnEntry: { type: "bool" },
         audioOutputMode: { type: "string" },
+        globalRolloffFactor: { type: "number" },
         invertTouchscreenCameraMove: { type: "bool" },
         enableOnScreenJoystickLeft: { type: "bool" },
         enableOnScreenJoystickRight: { type: "bool" },
