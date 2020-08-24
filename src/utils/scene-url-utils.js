@@ -23,7 +23,7 @@ export async function isValidSceneUrl(url) {
   if (await isLocalHubsSceneUrl(url)) {
     return true;
   } else {
-    return isValidGLB(proxiedUrlFor(url));
+    return isValidGLB(await proxiedUrlFor(url));
   }
 }
 

@@ -202,8 +202,8 @@ export const addMedia = (
     const desiredContentType = contentSubtype === "video-camera" ? "video/mp4" : src.type || guessContentType(src.name);
 
     upload(src, desiredContentType)
-      .then(response => {
-        const srcUrl = new URL(proxiedUrlFor(response.origin));
+      .then(async response => {
+        const srcUrl = new URL(await proxiedUrlFor(response.origin));
         srcUrl.searchParams.set("token", response.meta.access_token);
         entity.setAttribute("media-loader", { resolve: false, src: srcUrl.href, fileId: response.file_id });
         window.APP.store.update({

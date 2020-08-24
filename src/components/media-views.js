@@ -774,7 +774,14 @@ AFRAME.registerComponent("media-video", {
                   u = buildAbsoluteURL(baseUrl, u.startsWith("/") ? u : `/${u}`);
                 }
 
-                xhr.open("GET", proxiedUrlFor(u));
+                const send = xhr.send.bind(xhr);
+                let body;
+                xhr.send = b => (body = b);
+                //xhr.open("GET", `https://cors-proxy-dev.reticulum.io/${u}`);
+                proxiedUrlFor(u).then(proxiedUrl => {
+                  xhr.open("GET", proxiedUrl);
+                  send(body);
+                });
               }
             });
 

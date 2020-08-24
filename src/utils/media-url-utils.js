@@ -76,17 +76,22 @@ export const isNonCorsProxyDomain = hostname => {
   return nonCorsProxyDomains.find(domain => hostname.endsWith(domain));
 };
 
-export const proxiedUrlFor = url => {
+export const proxiedUrlFor = async url => {
   if (!(url.startsWith("http:") || url.startsWith("https:"))) return url;
 
   // Skip known domains that do not require CORS proxying.
   try {
     const parsedUrl = new URL(url);
     if (isNonCorsProxyDomain(parsedUrl.hostname)) return url;
+
+    // TODO check actual access control headers and response code
+    const headRes = await fetch(url, { method: "HEAD" });
+    return url;
   } catch (e) {
     // Ignore
   }
 
+  console.log("Using cors proxy");
   return `https://${configs.CORS_PROXY_SERVER}/${url}`;
 };
 
@@ -151,7 +156,7 @@ async function isHubsServer(url) {
 
   let isHubsServer;
   try {
-    isHubsServer = (await fetch(proxiedUrlFor(origin), { method: "HEAD" })).headers.has("hub-name");
+    isHubsServer = (await fetch(await proxiedUrlFor(origin), { method: "HEAD" })).headers.has("hub-name");
   } catch (e) {
     isHubsServer = false;
   }

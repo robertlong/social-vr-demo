@@ -386,11 +386,11 @@ AFRAME.registerComponent("media-loader", {
         }
 
         contentType = (result.meta && result.meta.expected_content_type) || contentType;
-        thumbnail = result.meta && result.meta.thumbnail && proxiedUrlFor(result.meta.thumbnail);
+        thumbnail = result.meta && result.meta.thumbnail && (await proxiedUrlFor(result.meta.thumbnail));
       }
 
       // todo: we don't need to proxy for many things if the canonical URL has permissive CORS headers
-      accessibleUrl = proxiedUrlFor(canonicalUrl);
+      accessibleUrl = await proxiedUrlFor(canonicalUrl);
 
       // if the component creator didn't know the content type, we didn't get it from reticulum, and
       // we don't think we can infer it from the extension, we need to make a HEAD request to find it out
@@ -446,7 +446,7 @@ AFRAME.registerComponent("media-loader", {
           "media-video",
           Object.assign({}, this.data.mediaOptions, {
             src: accessibleUrl,
-            audioSrc: canonicalAudioUrl ? proxiedUrlFor(canonicalAudioUrl) : null,
+            audioSrc: canonicalAudioUrl ? await proxiedUrlFor(canonicalAudioUrl) : null,
             time: startTime,
             contentType,
             linkedVideoTexture,

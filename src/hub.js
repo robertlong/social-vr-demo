@@ -379,7 +379,7 @@ async function updateEnvironmentForHub(hub, entryManager) {
     const baseURL = new URL(THREE.LoaderUtils.extractUrlBase(sceneUrl), window.location.href);
     sceneUrl = new URL(data.assets[0].src, baseURL).href;
   } else {
-    sceneUrl = proxiedUrlFor(sceneUrl);
+    sceneUrl = await proxiedUrlFor(sceneUrl);
   }
 
   console.log(`Scene URL: ${sceneUrl}`);

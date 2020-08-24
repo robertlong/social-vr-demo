@@ -25,7 +25,7 @@ export async function fetchAvatar(avatarId) {
     case AVATAR_TYPES.URL:
       return {
         avatar_id: avatarId,
-        gltf_url: proxiedUrlFor(avatarId)
+        gltf_url: await proxiedUrlFor(avatarId)
       };
   }
 }
@@ -34,12 +34,12 @@ async function fetchAvatarGltfUrl(avatarId) {
   return fetchAvatar(avatarId).then(avatar => avatar && avatar.gltf_url);
 }
 
-export function getAvatarSrc(avatarId) {
+export async function getAvatarSrc(avatarId) {
   switch (getAvatarType(avatarId)) {
     case AVATAR_TYPES.SKINNABLE:
       return fetchAvatarGltfUrl(avatarId);
     case AVATAR_TYPES.URL:
-      return proxiedUrlFor(avatarId);
+      return await proxiedUrlFor(avatarId);
     default:
       return avatarId;
   }
