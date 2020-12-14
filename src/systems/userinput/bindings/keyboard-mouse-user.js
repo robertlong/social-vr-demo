@@ -90,7 +90,7 @@ export const keyboardMouseUserBindings = addSetsToBindings({
     },
     {
       src: { value: paths.device.keyboard.key("Escape") },
-      dest: { value: paths.actions.camera.exitMirror },
+      dest: { value: paths.actions.focusUI },
       xform: xforms.falling
     },
     {

@@ -19,7 +19,13 @@ export function EnterOnDeviceModal({
   ...rest
 }) {
   return (
-    <Modal title="Enter on Device" beforeTitle={<BackButton onClick={onBack} />} className={className} {...rest}>
+    <Modal
+      title="Enter on Device"
+      beforeTitle={<BackButton onClick={onBack} />}
+      className={className}
+      {...rest}
+      onEscape={onBack}
+    >
       <Column center={loadingCode ? "both" : true} padding grow>
         {loadingCode ? (
           <b>Generating join code...</b>

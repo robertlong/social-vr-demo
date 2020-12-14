@@ -33,7 +33,13 @@ export function MicSetupModal({
   ...rest
 }) {
   return (
-    <Modal title="Microphone Setup" beforeTitle={<BackButton onClick={onBack} />} className={className} {...rest}>
+    <Modal
+      title="Microphone Setup"
+      beforeTitle={<BackButton onClick={onBack} />}
+      onEscape={onBack}
+      className={className}
+      {...rest}
+    >
       <Column center padding className={styles.content}>
         <p>Check your microphone and audio before entering.</p>
         <div className={styles.audioCheckContainer}>

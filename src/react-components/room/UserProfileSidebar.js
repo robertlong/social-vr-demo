@@ -32,6 +32,7 @@ export function UserProfileSidebar({
     <Sidebar
       title={identityName ? `${displayName} (${identityName})` : displayName}
       beforeTitle={showBackButton ? <BackButton onClick={onBack} /> : <CloseButton onClick={onClose} />}
+      onEscape={showBackButton ? onBack : onClose}
       className={className}
       {...rest}
     >

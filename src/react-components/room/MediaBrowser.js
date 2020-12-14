@@ -42,6 +42,7 @@ export function MediaBrowser({
 }) {
   return (
     <FullscreenLayout
+      onEscape={onClose}
       headerLeft={
         <IconButton onClick={onClose}>
           <CloseIcon />

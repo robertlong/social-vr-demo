@@ -46,7 +46,7 @@ export function LeaveRoomModal({ reason, destinationUrl, onClose }) {
   const intl = useIntl();
 
   return (
-    <Modal title="Leave Room" beforeTitle={<CloseButton onClick={onClose} />}>
+    <Modal title="Leave Room" beforeTitle={<CloseButton onClick={onClose} />} onEscape={onClose}>
       <Column padding center centerMd="both" grow>
         <p>{intl.formatMessage(reasonMessages[reason])}</p>
         <Button as="a" preset="cancel" href={destinationUrl} rel="noopener noreferrer">

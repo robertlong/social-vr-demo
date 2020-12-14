@@ -99,6 +99,7 @@ export function PeopleSidebar({ people, onSelectPerson, onClose, showMuteAll, on
     <Sidebar
       title={`People (${people.length})`}
       beforeTitle={<CloseButton onClick={onClose} />}
+      onEscape={onClose}
       afterTitle={showMuteAll ? <IconButton onClick={onMuteAll}>Mute All</IconButton> : undefined}
     >
       <List>

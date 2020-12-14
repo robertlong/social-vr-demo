@@ -6,7 +6,7 @@ import { AvatarSettingsContent } from "./AvatarSettingsContent";
 
 export function AvatarSetupModal({ className, onBack, ...rest }) {
   return (
-    <Modal title="Avatar Setup" beforeTitle={<BackButton onClick={onBack} />} className={className}>
+    <Modal title="Avatar Setup" beforeTitle={<BackButton onClick={onBack} />} onEscape={onBack} className={className}>
       <AvatarSettingsContent {...rest} />
     </Modal>
   );

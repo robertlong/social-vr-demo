@@ -123,6 +123,7 @@ import ReactDOM from "react-dom";
 import React from "react";
 import { Router, Route } from "react-router-dom";
 import { createBrowserHistory, createMemoryHistory } from "history";
+import { FocusGuard } from "focus-layers";
 import { pushHistoryState } from "./utils/history";
 import UIRoot from "./react-components/ui-root";
 import { ExitedRoomScreenContainer } from "./react-components/room/ExitedRoomScreenContainer";
@@ -293,6 +294,7 @@ function mountUI(props = {}) {
 
   ReactDOM.render(
     <WrappedIntlProvider>
+      <FocusGuard />
       <Router history={history}>
         <Route
           render={routeProps =>
@@ -317,6 +319,7 @@ function mountUI(props = {}) {
           }
         />
       </Router>
+      <FocusGuard />
     </WrappedIntlProvider>,
     document.getElementById("ui-root")
   );

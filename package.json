@@ -93,6 +93,7 @@
     "draft-js-linkify-plugin": "^2.0.1",
     "draft-js-plugins-editor": "^2.1.1",
     "event-target-shim": "^3.0.1",
+    "focus-layers": "^0.5.2",
     "form-data": "^3.0.0",
     "form-urlencoded": "^2.0.4",
     "history": "^4.7.2",

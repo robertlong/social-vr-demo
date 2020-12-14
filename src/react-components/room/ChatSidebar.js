@@ -190,7 +190,13 @@ ChatMessageList.propTypes = {
 
 export function ChatSidebar({ onClose, children, ...rest }) {
   return (
-    <Sidebar title="Chat" beforeTitle={<CloseButton onClick={onClose} />} contentClassName={styles.content} {...rest}>
+    <Sidebar
+      title="Chat"
+      beforeTitle={<CloseButton onClick={onClose} />}
+      onEscape={onClose}
+      contentClassName={styles.content}
+      {...rest}
+    >
       {children}
     </Sidebar>
   );

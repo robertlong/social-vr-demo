@@ -8,7 +8,7 @@ import { Column } from "../layout/Column";
 
 export function CloseRoomModal({ onClose, onConfirm }) {
   return (
-    <Modal title="Close Room" beforeTitle={<CloseButton onClick={onClose} />}>
+    <Modal title="Close Room" beforeTitle={<CloseButton onClick={onClose} />} onEscape={onClose}>
       <Column padding center centerMd="both" grow>
         <p>
           <FormattedMessage id="close-room.message" />

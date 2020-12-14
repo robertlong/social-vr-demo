@@ -95,6 +95,7 @@ export function RoomSidebar({ room, accountId, onClose, canEdit, onEdit, onChang
       title="Room"
       beforeTitle={<CloseButton onClick={onClose} />}
       afterTitle={canEdit && <IconButton onClick={onEdit}>Edit</IconButton>}
+      onEscape={onClose}
     >
       <Column padding>
         <InputField label="Name">{room.name}</InputField>

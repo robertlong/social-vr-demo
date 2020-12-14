@@ -7,7 +7,7 @@ import { Column } from "../layout/Column";
 
 export function WebVRUnsupportedModal({ onClose }) {
   return (
-    <Modal title="Enter in VR" beforeTitle={<CloseButton onClick={onClose} />}>
+    <Modal title="Enter in VR" beforeTitle={<CloseButton onClick={onClose} />} onEscape={onClose}>
       <Column padding center>
         <p>{"WebVR isn't supported in this browser, to enter with Oculus or SteamVR, use Firefox."}</p>
         <Button

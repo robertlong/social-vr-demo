@@ -9,7 +9,13 @@ import { Column } from "../layout/Column";
 
 export function MicPermissionsModal({ className, error, onClickErrorButton, errorButtonLabel, onBack, ...rest }) {
   return (
-    <Modal title="Enter on Device" beforeTitle={<BackButton onClick={onBack} />} className={className} {...rest}>
+    <Modal
+      title="Enter on Device"
+      beforeTitle={<BackButton onClick={onBack} />}
+      onEscape={onBack}
+      className={className}
+      {...rest}
+    >
       <Column padding center className={styles.content}>
         <b>Grant Microphone Permissions</b>
         <small>

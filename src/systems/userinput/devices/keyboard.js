@@ -1,22 +1,21 @@
 import { paths } from "../paths";
 import { ArrayBackedSet } from "../array-backed-set";
 export class KeyboardDevice {
-  constructor() {
+  constructor(canvasEl) {
     this.seenKeys = new ArrayBackedSet();
     this.keys = {};
     this.events = [];
 
     ["keydown", "keyup"].map(x =>
       document.addEventListener(x, e => {
-        if (!e.key) return;
+        // Keyboard shortcuts only work when the canvas is focused.
+        if (!e.key || document.activeElement !== canvasEl) return;
+
         this.events.push(e);
 
-        // Block browser hotkeys for chat command, media browser and freeze
+        // Ctrl + a number key is used to launch the media browser in a specific tab. Block the browser behavior when the canvas is focused.
+        // Tab key is blocked when the canvas is focused. Press the Esc key to move focus to the other menus.
         if (
-          (e.type === "keydown" &&
-            e.key === "/" &&
-            !["TEXTAREA", "INPUT"].includes(document.activeElement && document.activeElement.nodeName) &&
-            !(document.activeElement && document.activeElement.contentEditable === "true")) ||
           (e.ctrlKey &&
             (e.key === "1" ||
               e.key === "2" ||
@@ -28,7 +27,7 @@ export class KeyboardDevice {
               e.key === "8" ||
               e.key === "9" ||
               e.key === "0")) ||
-          (e.key === "Tab" && document.activeElement.classList.contains("a-canvas"))
+          e.key === "Tab"
         ) {
           e.preventDefault();
           return false;

@@ -4,6 +4,7 @@ import classNames from "classnames";
 import copy from "copy-to-clipboard";
 import { FormattedMessage } from "react-intl";
 import screenfull from "screenfull";
+import { LOCK_STACK } from "focus-layers";
 
 import configs from "../utils/configs";
 import { VR_DEVICE_AVAILABILITY } from "../utils/vr-caps-detect";
@@ -1729,6 +1730,53 @@ class UIRoot extends Component {
 function UIRootHooksWrapper(props) {
   useAccessibleOutlineStyle();
   const breakpoint = useCssBreakpoints();
+
+  useEffect(
+    () => {
+      const canvas = props.scene.canvas;
+
+      // Canvas element is focusable programatically or by clicking on it.
+      canvas.tabIndex = "-1";
+
+      let focusLocked = false;
+
+      function onFocusLockChanged(locked) {
+        focusLocked = locked;
+      }
+
+      let previousFocusedElement = document.body;
+
+      const onKeyDown = e => {
+        if (!focusLocked && e.key === "Escape" && props.scene.canvas && document.activeElement !== props.scene.canvas) {
+          previousFocusedElement = document.activeElement;
+          props.scene.canvas.focus();
+        }
+      };
+
+      function onFocusUI() {
+        (previousFocusedElement || document.body).focus();
+      }
+
+      function onSceneStateAdded(event) {
+        if (event.detail === "entered") {
+          props.scene.canvas.focus();
+        }
+      }
+
+      props.scene.addEventListener("stateadded", onSceneStateAdded);
+      LOCK_STACK.subscribe(onFocusLockChanged);
+      window.addEventListener("keydown", onKeyDown);
+      props.scene.addEventListener("action_focus_ui", onFocusUI);
+
+      return () => {
+        LOCK_STACK.unsubscribe(onFocusLockChanged);
+        window.removeEventListener("keydown", onKeyDown);
+        props.scene.removeEventListener("action_focus_ui", onFocusUI);
+        props.scene.removeEventListener("stateadded", onSceneStateAdded);
+      };
+    },
+    [props.scene]
+  );
 
   useEffect(
     () => {

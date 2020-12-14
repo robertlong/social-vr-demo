@@ -8,7 +8,7 @@ import { Column } from "../layout/Column";
 
 export function TwitterOAuthModal({ onConnect, onClose }) {
   return (
-    <Modal title="Connect to Twitter" beforeTitle={<CloseButton onClick={onClose} />}>
+    <Modal title="Connect to Twitter" beforeTitle={<CloseButton onClick={onClose} />} onEscape={onClose}>
       <Column padding center centerMd="both" grow>
         <p>
           <FormattedMessage id="oauth-dialog.message.twitter" />

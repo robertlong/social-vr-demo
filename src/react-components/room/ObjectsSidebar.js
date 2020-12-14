@@ -81,7 +81,7 @@ NoObjects.propTypes = {
 
 export function ObjectsSidebar({ children, objectCount, onClose }) {
   return (
-    <Sidebar title={`Objects (${objectCount})`} beforeTitle={<CloseButton onClick={onClose} />}>
+    <Sidebar title={`Objects (${objectCount})`} beforeTitle={<CloseButton onClick={onClose} />} onEscape={onClose}>
       <ul>{children}</ul>
     </Sidebar>
   );

@@ -38,7 +38,7 @@ export function TweetEditorModal({
   const tweetLength = editorState.getCurrentContent().getPlainText().length;
 
   return (
-    <Modal title="Tweet" beforeTitle={<CloseButton onClick={onClose} />}>
+    <Modal title="Tweet" beforeTitle={<CloseButton onClick={onClose} />} onEscape={onClose}>
       <Column padding center>
         <div className={styles.media}>
           {contentSubtype && contentSubtype.startsWith("video") ? (

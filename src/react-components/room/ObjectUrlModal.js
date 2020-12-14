@@ -52,7 +52,7 @@ export function ObjectUrlModal({ showModelCollectionLink, modelCollectionUrl, on
   const showCloseButton = hasFile || url.length > 0;
 
   return (
-    <Modal title="Custom Object" beforeTitle={<CloseButton onClick={onClose} />}>
+    <Modal title="Custom Object" beforeTitle={<CloseButton onClick={onClose} />} onEscape={onClose}>
       <Column as="form" padding center onSubmit={handleSubmit(onSubmit)}>
         <p>
           Upload or paste a URL to an image, video, model, or scene. Models can be found on{" "}

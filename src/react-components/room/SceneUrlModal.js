@@ -11,7 +11,7 @@ import { Column } from "../layout/Column";
 export function SceneUrlModal({ enableSpoke, onValidateUrl, onSubmit, onClose }) {
   const { isSubmitting, handleSubmit, register, errors } = useForm();
   return (
-    <Modal title="Custom Scene URL" beforeTitle={<CloseButton onClick={onClose} />}>
+    <Modal title="Custom Scene URL" beforeTitle={<CloseButton onClick={onClose} />} onEscape={onClose}>
       <Column as="form" padding center onSubmit={handleSubmit(onSubmit)}>
         <p>
           Paste a URL to a{" "}

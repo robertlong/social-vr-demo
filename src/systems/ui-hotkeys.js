@@ -23,6 +23,11 @@ AFRAME.registerSystem("ui-hotkeys", {
       this.userinput = this.el.systems.userinput;
     }
 
+    if (this.userinput.get(paths.actions.focusUI)) {
+      this.el.emit("action_focus_ui");
+      return;
+    }
+
     if (this.userinput.get(paths.actions.focusChat)) {
       this.focusChat();
     }

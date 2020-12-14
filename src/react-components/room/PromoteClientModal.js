@@ -8,7 +8,7 @@ import { Column } from "../layout/Column";
 
 export function PromoteClientModal({ onClose, onConfirm, displayName }) {
   return (
-    <Modal title="Promote User" beforeTitle={<CloseButton onClick={onClose} />}>
+    <Modal title="Promote User" beforeTitle={<CloseButton onClick={onClose} />} onEscape={onClose}>
       <Column center padding>
         <p>
           <FormattedMessage id="promote.message" />

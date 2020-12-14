@@ -52,6 +52,7 @@ export function RoomSettingsSidebar({
     <Sidebar
       title="Room Settings"
       beforeTitle={showBackButton ? <BackButton onClick={onClose} /> : <CloseButton onClick={onClose} />}
+      onEscape={onClose}
     >
       <Column padding as="form" onSubmit={handleSubmit(onSubmit)}>
         <SceneInfo

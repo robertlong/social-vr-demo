@@ -132,7 +132,12 @@ SignInComplete.propTypes = {
 
 export function SignInModal({ closeable, onClose, children, ...rest }) {
   return (
-    <Modal title="Sign In" beforeTitle={closeable && <CloseButton onClick={onClose} />} {...rest}>
+    <Modal
+      title="Sign In"
+      beforeTitle={closeable && <CloseButton onClick={onClose} />}
+      onEscape={closeable && onClose}
+      {...rest}
+    >
       {children}
     </Modal>
   );

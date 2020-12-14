@@ -11,7 +11,7 @@ import { Column } from "../layout/Column";
 export function AvatarUrlModal({ onSubmit, onClose }) {
   const { handleSubmit, register } = useForm();
   return (
-    <Modal title="Custom Avatar URL" beforeTitle={<CloseButton onClick={onClose} />}>
+    <Modal title="Custom Avatar URL" beforeTitle={<CloseButton onClick={onClose} />} onEscape={onClose}>
       <Column as="form" padding center onSubmit={handleSubmit(onSubmit)}>
         <TextInputField
           name="url"

@@ -247,7 +247,7 @@ AFRAME.registerSystem("userinput", {
     if (!(isMobile || isMobileVR || forceEnableTouchscreen)) {
       this.activeDevices.add(new MouseDevice());
       this.activeDevices.add(new AppAwareMouseDevice());
-      this.activeDevices.add(new KeyboardDevice());
+      this.activeDevices.add(new KeyboardDevice(this.el.sceneEl.canvas));
     } else if (!isMobileVR || forceEnableTouchscreen) {
       this.activeDevices.add(new AppAwareTouchscreenDevice());
       this.activeDevices.add(new KeyboardDevice());
