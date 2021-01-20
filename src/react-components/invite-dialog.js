@@ -2,7 +2,7 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import copy from "copy-to-clipboard";
 import classNames from "classnames";
-import { FormattedMessage } from "react-intl";
+import { injectIntl, FormattedMessage } from "react-intl";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import configs from "../utils/configs";
@@ -19,8 +19,9 @@ function pad(num, size) {
   return s;
 }
 
-export default class InviteDialog extends Component {
+class InviteDialog extends Component {
   static propTypes = {
+    intl: PropTypes.object,
     entryCode: PropTypes.number,
     hubId: PropTypes.string,
     allowShare: PropTypes.bool,
@@ -52,6 +53,7 @@ export default class InviteDialog extends Component {
   };
 
   render() {
+    const { formatMessage } = this.props.intl;
     const { entryCode, embedUrl } = this.props;
 
     const entryCodeString = pad(entryCode, 6);
@@ -71,7 +73,11 @@ export default class InviteDialog extends Component {
         <div className={styles.buttons}>
           <WithHoverSound>
             <button className={styles.linkButton} onClick={this.copyClicked.bind(this, shortLink)}>
-              <span>{this.state.copyButtonActive ? "copied!" : "copy"}</span>
+              <span>
+                {this.state.copyButtonActive
+                  ? formatMessage({ id: "support.copied" })
+                  : formatMessage({ id: "support.copy" })}
+              </span>
             </button>
           </WithHoverSound>
           {this.props.allowShare &&
@@ -172,3 +178,5 @@ export default class InviteDialog extends Component {
     );
   }
 }
+
+export default injectIntl(InviteDialog);

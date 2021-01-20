@@ -1,11 +1,11 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
+import { injectIntl, FormattedMessage } from "react-intl";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faPaperclip } from "@fortawesome/free-solid-svg-icons/faPaperclip";
 import { faTimes } from "@fortawesome/free-solid-svg-icons/faTimes";
 
-import { getMessages } from "../utils/i18n";
 import configs from "../utils/configs";
 import IfFeature from "./if-feature";
 import giphyLogo from "../assets/images/giphy_logo.png";
@@ -22,49 +22,54 @@ const attributionHostnames = {
 };
 
 const isMobile = AFRAME.utils.device.isMobile() || AFRAME.utils.device.isMobileVR();
-const instructions = "Paste a URL to an image, video, model, scene, or upload.";
-const desktopTips = `Tip: You can paste URLs directly into ${getMessages()["app-name"]} with Ctrl+V`;
 const references = (
   <span>
-    For models, try{" "}
+    <FormattedMessage id="create-object-dialog.references.pre" />{" "}
     <a href="https://sketchfab.com/search?features=downloadable&type=models" target="_blank" rel="noopener noreferrer">
-      Sketchfab
+      <FormattedMessage id="create-object-dialog.references.sketchfab" />
     </a>{" "}
-    and{" "}
+    <FormattedMessage id="create-object-dialog.references.and" />{" "}
     <a href="http://poly.google.com/" target="_blank" rel="noopener noreferrer">
-      Google Poly
-    </a>
+      <FormattedMessage id="create-object-dialog.references.poly" />
+    </a>{" "}
     <IfFeature name="show_model_collection_link">
-      , or our{" "}
+      <FormattedMessage id="create-object-dialog.references.or-our" />{" "}
       <a
         href={configs.link("model_collection", "https://sketchfab.com/mozillareality")}
         target="_blank"
         rel="noopener noreferrer"
       >
-        collection
-      </a>
-    </IfFeature>.
+        <FormattedMessage id="create-object-dialog.references.collection" />
+      </a>{" "}
+    </IfFeature>
+    <FormattedMessage id="create-object-dialog.references.post" />
   </span>
 );
 
 const mobileInstructions = (
   <div>
-    <p>{instructions}</p>
+    <p>
+      <FormattedMessage id="create-object-dialog.instructions" />
+    </p>
     <p>{references}</p>
   </div>
 );
 const desktopInstructions = (
   <div>
-    <p>{instructions}</p>
+    <p>
+      <FormattedMessage id="create-object-dialog.instructions" />
+    </p>
     <p>{references}</p>
-    <p>{desktopTips}</p>
+    <p>
+      <FormattedMessage id="create-object-dialog.desktop-tips" />
+    </p>
   </div>
 );
 
 let lastUrl = "";
 const fileInputId = "file-input";
 
-export default class CreateObjectDialog extends Component {
+class CreateObjectDialog extends Component {
   state = {
     url: "",
     file: null,
@@ -72,6 +77,7 @@ export default class CreateObjectDialog extends Component {
   };
 
   static propTypes = {
+    intl: PropTypes.object,
     onCreate: PropTypes.func,
     onClose: PropTypes.func
   };
@@ -120,6 +126,7 @@ export default class CreateObjectDialog extends Component {
   };
 
   render() {
+    const { formatMessage } = this.props.intl;
     const { onCreate, onClose, ...other } = this.props; // eslint-disable-line no-unused-vars
 
     const cancelButton = (
@@ -150,7 +157,11 @@ export default class CreateObjectDialog extends Component {
     );
 
     return (
-      <DialogContainer title="Create Object" onClose={this.props.onClose} {...other}>
+      <DialogContainer
+        title={formatMessage({ id: "create-object-dialog.title" })}
+        onClose={this.props.onClose}
+        {...other}
+      >
         <div>
           {isMobile ? mobileInstructions : desktopInstructions}
           <form onSubmit={this.onCreateClicked}>
@@ -169,7 +180,9 @@ export default class CreateObjectDialog extends Component {
               <div className={styles.buttons}>
                 <WithHoverSound>
                   <button className={styles.actionButton}>
-                    <span>Create</span>
+                    <span>
+                      <FormattedMessage id="create-object-dialog.create" />
+                    </span>
                   </button>
                 </WithHoverSound>
               </div>
@@ -185,3 +198,5 @@ export default class CreateObjectDialog extends Component {
     );
   }
 }
+
+export default injectIntl(CreateObjectDialog);

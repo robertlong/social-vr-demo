@@ -1,18 +1,21 @@
 import React, { Component } from "react";
 import DialogContainer from "./dialog-container.js";
 import styles from "../assets/stylesheets/leave-room-dialog.scss";
-import { FormattedMessage } from "react-intl";
+import { injectIntl, FormattedMessage } from "react-intl";
 import PropTypes from "prop-types";
 
-export default class LeaveRoomDialog extends Component {
+class LeaveRoomDialog extends Component {
   static propTypes = {
+    intl: PropTypes.object,
     messageType: PropTypes.string,
     destinationUrl: PropTypes.string
   };
 
   render() {
+    const { formatMessage } = this.props.intl;
+
     return (
-      <DialogContainer title="Leave Room" {...this.props}>
+      <DialogContainer title={formatMessage({ id: "leave-room-dialog.title" })} {...this.props}>
         <div className={styles.leaveRoom}>
           <div>
             <FormattedMessage id={`leave-room-dialog.${this.props.messageType}.message`} />
@@ -25,3 +28,5 @@ export default class LeaveRoomDialog extends Component {
     );
   }
 }
+
+export default injectIntl(LeaveRoomDialog);

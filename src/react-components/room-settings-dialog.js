@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import cx from "classnames";
-import { FormattedMessage } from "react-intl";
+import { injectIntl, FormattedMessage } from "react-intl";
 
 import { hubUrl } from "../utils/phoenix-utils";
 import { handleTextFieldFocus, handleTextFieldBlur } from "../utils/focus-utils";
@@ -9,8 +9,9 @@ import styles from "../assets/stylesheets/room-settings-dialog.scss";
 import DialogContainer from "./dialog-container";
 import configs from "../utils/configs";
 
-export default class RoomSettingsDialog extends Component {
+class RoomSettingsDialog extends Component {
   static propTypes = {
+    intl: PropTypes.object,
     initialSettings: PropTypes.object,
     onChange: PropTypes.func,
     hubChannel: PropTypes.object,
@@ -90,12 +91,13 @@ export default class RoomSettingsDialog extends Component {
   }
 
   render() {
+    const { formatMessage } = this.props.intl;
     const { showPublicRoomSetting } = this.props;
 
     const maxRoomSize = configs.feature("max_room_size");
 
     return (
-      <DialogContainer title="Room Settings" {...this.props}>
+      <DialogContainer title={formatMessage({ id: "settings.room-settings" })} {...this.props}>
         <form onSubmit={this.onSubmit} className={styles.roomSettingsForm}>
           <span className={styles.subtitle}>
             <FormattedMessage id="room-settings.name-subtitle" />
@@ -105,7 +107,7 @@ export default class RoomSettingsDialog extends Component {
             type="text"
             required
             autoComplete="off"
-            placeholder="Room name"
+            placeholder={formatMessage({ id: "room-settings.name-subtitle" })}
             maxLength={64}
             minLength={1}
             value={this.state.name}
@@ -121,7 +123,7 @@ export default class RoomSettingsDialog extends Component {
             name="description"
             rows="5"
             autoComplete="off"
-            placeholder="Room description"
+            placeholder={formatMessage({ id: "room-settings.description-subtitle" })}
             value={this.state.description || ""}
             onFocus={e => handleTextFieldFocus(e.target)}
             onBlur={() => handleTextFieldBlur()}
@@ -138,7 +140,7 @@ export default class RoomSettingsDialog extends Component {
               required
               min={0}
               max={maxRoomSize}
-              placeholder="Member Limit"
+              placeholder={formatMessage({ id: "room-settings.room-size-subtitle" })}
               value={this.state.room_size}
               onFocus={e => handleTextFieldFocus(e.target)}
               onBlur={() => handleTextFieldBlur()}
@@ -182,7 +184,9 @@ export default class RoomSettingsDialog extends Component {
                 </span>
                 {this.state.entry_mode === "invite" && (
                   <div className={styles.inviteLink}>
-                    <span>Invite link:</span>{" "}
+                    <span>
+                      <FormattedMessage id="room-settings.access-invite-link" />
+                    </span>{" "}
                     {this.state.fetchingInvite ? (
                       <span>...</span>
                     ) : (
@@ -263,3 +267,5 @@ export default class RoomSettingsDialog extends Component {
     );
   }
 }
+
+export default injectIntl(RoomSettingsDialog);

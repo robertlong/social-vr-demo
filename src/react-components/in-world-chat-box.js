@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
+import { injectIntl } from "react-intl";
 import styles from "../assets/stylesheets/message-entry.scss";
 import ChatCommandHelp from "./chat-command-help";
 import sendMessageIcon from "../assets/images/send_message.svgi";
@@ -17,6 +18,7 @@ const isMobile = AFRAME.utils.device.isMobile();
 
 class InWorldChatBox extends Component {
   static propTypes = {
+    intl: PropTypes.object,
     discordBridges: PropTypes.array,
     onSendMessage: PropTypes.func,
     onObjectCreated: PropTypes.func,
@@ -37,6 +39,7 @@ class InWorldChatBox extends Component {
   };
 
   render() {
+    const { formatMessage } = this.props.intl;
     const textRows = this.state.pendingMessage.split("\n").length;
     const pendingMessageTextareaHeight = textRows * 28 + "px";
     const pendingMessageFieldHeight = textRows * 28 + 20 + "px";
@@ -113,7 +116,11 @@ class InWorldChatBox extends Component {
               }
             }}
             aria-label="chat message input"
-            placeholder={this.props.discordBridges.length ? `Send to room and ${discordSnippet}...` : "Send to room..."}
+            placeholder={
+              this.props.discordBridges.length
+                ? formatMessage({ id: "in-world-chat-box.placeholder-discord" }, { discordSnippet })
+                : formatMessage({ id: "in-world-chat-box.placeholder" })
+            }
           />
           {this.props.enableSpawning && (
             <InlineSVGButton
@@ -146,4 +153,4 @@ class InWorldChatBox extends Component {
   }
 }
 
-export default InWorldChatBox;
+export default injectIntl(InWorldChatBox);

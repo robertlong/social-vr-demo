@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import PropTypes from "prop-types";
 import classNames from "classnames";
+import { injectIntl } from "react-intl";
 import styles from "../assets/stylesheets/message-entry.scss";
 import { WithHoverSound } from "./wrap-with-audio";
 import { handleTextFieldFocus, handleTextFieldBlur } from "../utils/focus-utils";
@@ -9,6 +10,7 @@ import { InlineSVGButton } from "./svgi";
 
 class LobbyChatBox extends Component {
   static propTypes = {
+    intl: PropTypes.object,
     discordBridges: PropTypes.array,
     occupantCount: PropTypes.number,
     onSendMessage: PropTypes.func
@@ -27,17 +29,21 @@ class LobbyChatBox extends Component {
   };
 
   render() {
+    const { formatMessage } = this.props.intl;
     const textRows = this.state.pendingMessage.split("\n").length;
     const pendingMessageTextareaHeight = textRows * 28 + "px";
     const pendingMessageFieldHeight = textRows * 28 + 20 + "px";
     const discordSnippet = this.props.discordBridges.map(ch => "#" + ch).join(", ");
-    const occupantSnippet = `${this.props.occupantCount - 1} other${this.props.occupantCount > 2 ? "s" : ""}`;
+    const occupantSnippet = formatMessage(
+      { id: "lobby-chat-box.occupant-snippet" },
+      { occupantCount: this.props.occupantCount - 1 }
+    );
     const messageEntryPlaceholder =
       this.props.occupantCount <= 1
-        ? "Nobody is here yet..."
+        ? formatMessage({ id: "lobby-chat-box.placeholder-nobody" })
         : this.props.discordBridges.length
-          ? `Send message to ${occupantSnippet} and ${discordSnippet}...`
-          : `Send message to ${occupantSnippet}...`;
+          ? formatMessage({ id: "lobby-chat-box.placeholder-occupant-discord" }, { occupantSnippet, discordSnippet })
+          : formatMessage({ id: "lobby-chat-box.placeholder-occupant" }, { occupantSnippet });
 
     return (
       <form onSubmit={this.sendMessage}>
@@ -80,4 +86,4 @@ class LobbyChatBox extends Component {
   }
 }
 
-export default LobbyChatBox;
+export default injectIntl(LobbyChatBox);
