@@ -56,7 +56,8 @@ export const SCHEMA = {
       additionalProperties: false,
       properties: {
         token: { type: ["null", "string"] },
-        email: { type: ["null", "string"] }
+        email: { type: ["null", "string"] },
+        displayName: { type: ["null", "string"] }
       }
     },
 
@@ -251,7 +252,7 @@ export default class Store extends EventTarget {
 
     const expiry = jwtDecode(this.state.credentials.token).exp * 1000;
     if (expiry <= Date.now()) {
-      this.update({ credentials: { token: null, email: null } });
+      this.update({ credentials: { token: null, email: null, displayName: null } });
     }
   };
 

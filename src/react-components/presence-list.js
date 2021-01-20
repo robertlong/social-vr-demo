@@ -7,7 +7,6 @@ import classNames from "classnames";
 
 import rootStyles from "../assets/stylesheets/ui-root.scss";
 import styles from "../assets/stylesheets/presence-list.scss";
-import maskEmail from "../utils/mask-email";
 import StateLink from "./state-link.js";
 import { WithHoverSound } from "./wrap-with-audio";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -67,7 +66,7 @@ export default class PresenceList extends Component {
     history: PropTypes.object,
     sessionId: PropTypes.string,
     signedIn: PropTypes.bool,
-    email: PropTypes.string,
+    displayName: PropTypes.string,
     onSignIn: PropTypes.func,
     onSignOut: PropTypes.func,
     expanded: PropTypes.bool,
@@ -218,7 +217,7 @@ export default class PresenceList extends Component {
             {this.props.signedIn ? (
               <div>
                 <span>
-                  <FormattedMessage id="sign-in.as" /> {maskEmail(this.props.email)}
+                  <FormattedMessage id="sign-in.as" /> {this.props.displayName}
                 </span>{" "}
                 <a onClick={this.props.onSignOut}>
                   <FormattedMessage id="sign-in.out" />

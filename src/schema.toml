@@ -84,3 +84,6 @@ links.model_collection = { category = "links", type = "string", name = "Model Co
 
 auth.login_subject = { category = "auth", type="string", name="Magic Link Email Subject", description="Customize the email subject line for users logging in" }
 auth.login_body = { category = "auth", type="longstring", name="Magic Link Email Body", description="Customize message. Add '{{ link }}' to insert the magic link, otherwise it will be appended at the end." }
+
+auth.use_oidc = { category = "auth", type = "boolean", name = "Use OpenID Connect for login", description = "Log in using an OpenID connect provider instead of email verification", internal = "true" }
+auth.oidc_button_label = { category = "auth", type="string", name="OpenID Connect Sign In button label", description="Text to display on the sign in button. Ex: Sign in with Google", internal = "true" }

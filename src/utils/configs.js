@@ -51,9 +51,14 @@ if (window.APP_CONFIG) {
   if (!configs.APP_CONFIG.features) {
     configs.APP_CONFIG.features = {};
   }
+
+  if (!configs.APP_CONFIG.auth) {
+    configs.APP_CONFIG.auth = {};
+  }
 } else {
   configs.APP_CONFIG = {
-    features: {}
+    features: {},
+    auth: {}
   };
 }
 

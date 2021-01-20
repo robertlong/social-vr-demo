@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, useCallback } from "react";
 import PropTypes from "prop-types";
 import configs from "../../utils/configs";
+import maskEmail from "../../utils/mask-email";
 
 // TODO: We really shouldn't include these dependencies on every page. A dynamic import would work better.
 import jwtDecode from "jwt-decode";
@@ -48,11 +49,13 @@ async function checkIsAdmin(socket, store) {
 
 export function AuthContextProvider({ children, store }) {
   const signIn = useCallback(
-    async email => {
+    async authPayload => {
       const authChannel = new AuthChannel(store);
       const socket = await connectToReticulum();
       authChannel.setSocket(socket);
-      const { authComplete } = await authChannel.startAuthentication(email);
+      const { authComplete } = await (authPayload == "oidc"
+        ? authChannel.startOIDCAuthentication()
+        : authChannel.startAuthentication(authPayload));
       await authComplete;
       await checkIsAdmin(socket, store);
     },
@@ -64,7 +67,7 @@ export function AuthContextProvider({ children, store }) {
       const authChannel = new AuthChannel(store);
       const socket = await connectToReticulum();
       authChannel.setSocket(socket);
-      await authChannel.verifyAuthentication(authParams.topic, authParams.token, authParams.payload);
+      await authChannel.verifyAuthentication(authParams.topic, authParams.token, authParams.payload, authParams.origin);
     },
     [store]
   );
@@ -82,7 +85,8 @@ export function AuthContextProvider({ children, store }) {
     initialized: false,
     isSignedIn: !!store.state.credentials && store.state.credentials.token,
     isAdmin: configs.isAdmin(),
-    email: store.state.credentials && store.state.credentials.email,
+    displayName:
+      store.state.credentials && (store.state.credentials.displayName || maskEmail(store.state.credentials.email)),
     userId: store.credentialsAccountId,
     signIn,
     verify,
@@ -97,7 +101,9 @@ export function AuthContextProvider({ children, store }) {
           ...state,
           isSignedIn: !!store.state.credentials && store.state.credentials.token,
           isAdmin: configs.isAdmin(),
-          email: store.state.credentials && store.state.credentials.email,
+          displayName:
+            store.state.credentials &&
+            (store.state.credentials.displayName || maskEmail(store.state.credentials.email)),
           userId: store.credentialsAccountId
         }));
       };

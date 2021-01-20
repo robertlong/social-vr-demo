@@ -15,6 +15,7 @@
   "sign-in.admin-no-permission": "You don't have access to admin tools. Sign into another account or ask an administrator to grant you permission.",
   "sign-in.hub": "An account is required to join rooms.\n\nEnter your email to create your account or sign in.",
   "sign-in.auth-started": "Email sent to {email}!\n\nTo continue, click on the link in the email using your phone, tablet, or PC.\n\nNo email? You may not be able to create an account.",
+  "sign-in.oidc-auth-started": "Waiting for signin...",
   "sign-in.pin": "You'll need to sign in to pin objects.",
   "sign-in.pin-complete": "You are now signed in.",
   "sign-in.unpin": "You'll need to sign in to un-pin objects.",

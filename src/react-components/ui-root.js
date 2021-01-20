@@ -11,6 +11,7 @@ import IfFeature from "./if-feature";
 import UnlessFeature from "./unless-feature";
 import { VR_DEVICE_AVAILABILITY } from "../utils/vr-caps-detect";
 import { canShare } from "../utils/share";
+import maskEmail from "../utils/mask-email";
 import styles from "../assets/stylesheets/ui-root.scss";
 import entryStyles from "../assets/stylesheets/entry.scss";
 import inviteStyles from "../assets/stylesheets/invite-dialog.scss";
@@ -869,8 +870,10 @@ class UIRoot extends Component {
   showSignInDialog = () => {
     this.showNonHistoriedDialog(SignInDialog, {
       message: getMessages()["sign-in.prompt"],
-      onSignIn: async email => {
-        const { authComplete } = await this.props.authChannel.startAuthentication(email, this.props.hubChannel);
+      onSignIn: async authPayload => {
+        const { authComplete } = await (authPayload == "oidc"
+          ? this.props.authChannel.startOIDCAuthentication(this.props.hubChannel)
+          : this.props.authChannel.startAuthentication(authPayload, this.props.hubChannel));
 
         this.showNonHistoriedDialog(SignInDialog, { authStarted: true });
 
@@ -2083,7 +2086,9 @@ class UIRoot extends Component {
                 presences={this.props.presences}
                 sessionId={this.props.sessionId}
                 signedIn={this.state.signedIn}
-                email={this.props.store.state.credentials.email}
+                displayName={
+                  this.props.store.state.credentials.displayName || maskEmail(this.props.store.state.credentials.email)
+                }
                 onSignIn={this.showSignInDialog}
                 onSignOut={this.signOut}
                 expanded={!this.state.isObjectListExpanded && this.state.isPresenceListExpanded}

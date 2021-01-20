@@ -6,6 +6,8 @@ import { Loader } from "../misc/Loader";
 import { AuthContext } from "../auth/AuthContext";
 import configs from "../../utils/configs";
 
+import jwtDecode from "jwt-decode";
+
 const VerificationStep = {
   verifying: "verifying",
   complete: "complete",
@@ -22,12 +24,28 @@ function useVerify() {
       try {
         const qs = new URLSearchParams(location.search);
 
-        const authParams = {
-          topic: qs.get("auth_topic"),
-          token: qs.get("auth_token"),
-          origin: qs.get("auth_origin"),
-          payload: qs.get("auth_payload")
-        };
+        if (qs.get("error")) {
+          throw new Error(`${qs.get("error")}: ${qs.get("error_description")}`);
+        }
+
+        let authParams;
+        if (qs.get("code")) {
+          const state = qs.get("state");
+          const topic_key = jwtDecode(state).topic_key;
+          authParams = {
+            topic: `oidc:${topic_key}`,
+            token: qs.get("code"),
+            origin: "oidc",
+            payload: qs.get("state")
+          };
+        } else {
+          authParams = {
+            topic: qs.get("auth_topic"),
+            token: qs.get("auth_token"),
+            origin: qs.get("auth_origin"),
+            payload: qs.get("auth_payload")
+          };
+        }
 
         await auth.verify(authParams);
         setStep(VerificationStep.complete);
@@ -46,7 +64,7 @@ function useVerify() {
 function EmailVerifying() {
   return (
     <div className={styles.signInContainer}>
-      <h1>Email Verifying</h1>
+      <h1>Verifying...</h1>
       <Loader />
     </div>
   );
@@ -55,6 +73,10 @@ function EmailVerifying() {
 function EmailVerified() {
   const qs = new URLSearchParams(location.search);
   const origin = qs.get("auth_origin");
+
+  useEffect(function() {
+    window.close();
+  });
 
   return (
     <div className={styles.signInContainer}>

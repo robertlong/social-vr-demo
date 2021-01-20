@@ -4,7 +4,6 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCog } from "@fortawesome/free-solid-svg-icons/faCog";
 import IfFeature from "../if-feature";
 import configs from "../../utils/configs";
-import maskEmail from "../../utils/mask-email";
 import styles from "./Header.scss";
 import { AuthContext } from "../auth/AuthContext";
 import { WrappedIntlProvider } from "../wrapped-intl-provider";
@@ -72,7 +71,7 @@ export function Header() {
           {auth.isSignedIn ? (
             <div>
               <span>
-                <FormattedMessage id="sign-in.as" /> {maskEmail(auth.email)}
+                <FormattedMessage id="sign-in.as" /> {auth.displayName}
               </span>{" "}
               <a href="#" onClick={auth.signOut}>
                 <FormattedMessage id="sign-in.out" />

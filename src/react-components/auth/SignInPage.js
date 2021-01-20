@@ -15,6 +15,7 @@ const SignInStep = {
 
 const SignInAction = {
   submitEmail: "submitEmail",
+  submitOIDC: "submitOIDC",
   verificationReceived: "verificationReceived",
   cancel: "cancel"
 };
@@ -28,6 +29,8 @@ function loginReducer(state, action) {
   switch (action.type) {
     case SignInAction.submitEmail:
       return { step: SignInStep.waitForVerification, email: action.email };
+    case SignInAction.submitOIDC:
+      return { step: SignInStep.waitForVerification };
     case SignInAction.verificationReceived:
       return { ...state, step: SignInStep.complete };
     case SignInAction.cancel:
@@ -49,6 +52,16 @@ function useSignIn() {
     [auth]
   );
 
+  const submitOIDC = useCallback(
+    () => {
+      auth.signIn("oidc").then(() => {
+        dispatch({ type: SignInAction.verificationReceived });
+      });
+      dispatch({ type: SignInAction.submitOIDC });
+    },
+    [auth]
+  );
+
   const cancel = useCallback(() => {
     dispatch({ type: SignInAction.cancel });
   }, []);
@@ -57,6 +70,7 @@ function useSignIn() {
     step: state.step,
     email: state.email,
     submitEmail,
+    submitOIDC,
     cancel
   };
 }
@@ -116,21 +130,42 @@ function SubmitEmail({ onSubmitEmail, initialEmail }) {
     </form>
   );
 }
-
 SubmitEmail.defaultProps = {
   initialEmail: ""
 };
-
 SubmitEmail.propTypes = {
   initialEmail: PropTypes.string,
   onSubmitEmail: PropTypes.func.isRequired
+};
+
+function SubmitOIDC({ onSubmitOIDC }) {
+  const onSubmitForm = useCallback(
+    e => {
+      e.preventDefault();
+      onSubmitOIDC();
+    },
+    [onSubmitOIDC]
+  );
+
+  return (
+    <form onSubmit={onSubmitForm} className={styles.signInContainer}>
+      <button type="submit">{configs.APP_CONFIG.auth.oidc_button_label || "Sign In"}</button>
+    </form>
+  );
+}
+SubmitOIDC.propTypes = {
+  onSubmitOIDC: PropTypes.func.isRequired
 };
 
 function WaitForVerification({ email, onCancel }) {
   return (
     <div className={styles.signInContainer}>
       <p>
-        <FormattedMessage id="sign-in.auth-started" values={{ email }} />
+        {email ? (
+          <FormattedMessage id="sign-in.auth-started" values={{ email }} />
+        ) : (
+          <FormattedMessage className="preformatted" id="sign-in.oidc-auth-started" />
+        )}
       </p>
       <IfFeature name="show_newsletter_signup">
         <p>
@@ -146,13 +181,13 @@ function WaitForVerification({ email, onCancel }) {
 }
 
 WaitForVerification.propTypes = {
-  email: PropTypes.string.isRequired,
+  email: PropTypes.string,
   onCancel: PropTypes.func.isRequired
 };
 
 export function SignInPage() {
   const qs = new URLSearchParams(location.search);
-  const { step, submitEmail, cancel, email } = useSignIn();
+  const { step, submitEmail, submitOIDC, cancel, email } = useSignIn();
   const redirectUrl = qs.get("sign_in_destination_url") || "/";
 
   useEffect(
@@ -167,7 +202,11 @@ export function SignInPage() {
   return (
     <Page style={{ backgroundImage: configs.image("home_background", true), backgroundSize: "cover" }}>
       {step === SignInStep.submit ? (
-        <SubmitEmail onSubmitEmail={submitEmail} initialEmail={email} signInReason={qs.get("sign_in_reason")} />
+        configs.APP_CONFIG.auth.use_oidc ? (
+          <SubmitOIDC onSubmitOIDC={submitOIDC} />
+        ) : (
+          <SubmitEmail onSubmitEmail={submitEmail} initialEmail={email} signInReason={qs.get("sign_in_reason")} />
+        )
       ) : (
         <WaitForVerification onCancel={cancel} email={email} />
       )}
