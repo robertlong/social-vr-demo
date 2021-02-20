@@ -178,6 +178,32 @@ function registerNetworkSchemas() {
   });
 
   NAF.schemas.add({
+    template: "#interactable-iframe-media",
+    components: [
+      {
+        component: "position",
+        requiresNetworkUpdate: vectorRequiresUpdate(0.001)
+      },
+      {
+        component: "rotation",
+        requiresNetworkUpdate: vectorRequiresUpdate(0.5)
+      },
+      {
+        component: "scale",
+        requiresNetworkUpdate: vectorRequiresUpdate(0.001)
+      },
+      {
+        component: "iframe",
+        property: "src"
+      }
+      // {
+      //   component: "page-thumbnail",
+      //   property: "src"
+      // }
+    ]
+  });
+
+  NAF.schemas.add({
     template: "#static-media",
     components: [
       // TODO: Optimize checking mediaOptions with requiresNetworkUpdate.

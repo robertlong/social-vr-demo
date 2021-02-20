@@ -252,7 +252,7 @@ export class CameraSystem {
     this.mode = NEXT_MODES[this.mode] || 0;
   }
 
-  inspect(el, distanceMod, fireChangeEvent = true) {
+  inspect(el, distanceMod, updateObjectListState = true) {
     const { inspectable, pivot } = getInspectableAndPivot(el);
 
     this.verticalDelta = 0;
@@ -303,12 +303,10 @@ export class CameraSystem {
       distanceMod || 1
     );
 
-    if (fireChangeEvent) {
-      scene.emit("inspect-target-changed");
-    }
+    scene.emit("inspect-target-changed", { inspectTarget: this.inspectable, updateObjectListState });
   }
 
-  uninspect(fireChangeEvent = true) {
+  uninspect(updateObjectListState = true) {
     if (this.mode !== CAMERA_MODE_INSPECT) return;
     const scene = AFRAME.scenes[0];
     if (scene.is("entered")) {
@@ -330,9 +328,7 @@ export class CameraSystem {
     this.snapshot.mode = null;
     this.tick(AFRAME.scenes[0]);
 
-    if (fireChangeEvent) {
-      scene.emit("inspect-target-changed");
-    }
+    scene.emit("inspect-target-changed", { inspectTarget: this.inspectable, updateObjectListState });
   }
 
   toggleLights() {

@@ -72,6 +72,8 @@ import "./components/visibility-while-frozen";
 import "./components/stats-plus";
 import "./components/networked-avatar";
 import "./components/media-views";
+import "./components/page-thumbnail";
+import "./components/iframe";
 import "./components/avatar-volume-controls";
 import "./components/pinch-to-move";
 import "./components/pitch-yaw-rotator";

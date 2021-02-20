@@ -1,0 +1,40 @@
+:local(.inspect-iframe) {
+  z-index: 0 !important;
+  
+  * {
+    transform: none !important;
+  }
+
+  :local(.browser-container), :local(.browser), :local(.iframe) {
+    width: 100% !important;
+    height: 100% !important;
+  }
+}
+
+:local(.address-bar) {
+  height: 64px;
+  background-color: #333;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0 16px;
+
+  & > * {
+    margin-right: 16px;
+  }
+
+  & > :last-child {
+    margin-right: 0;
+  }
+}
+
+:local(.address-field) {
+  flex: 1;
+  border-radius: 6px;
+  height: 32px;
+  background-color: #fff;
+  display: flex;
+  align-items: center;
+  padding: 0 8px;
+  border: none;
+}

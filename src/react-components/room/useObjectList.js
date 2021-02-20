@@ -115,7 +115,11 @@ export function ObjectListProvider({ scene, children }) {
 
   useEffect(
     () => {
-      function onInspectTargetChanged() {
+      function onInspectTargetChanged(event) {
+        if (!event.detail.updateObjectListState) {
+          return;
+        }
+
         const cameraSystem = scene.systems["hubs-systems"].cameraSystem;
 
         const inspectedEl = cameraSystem.inspectable && cameraSystem.inspectable.el;

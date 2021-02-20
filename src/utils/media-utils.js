@@ -1,10 +1,7 @@
 import { objectTypeForOriginAndContentType } from "../object-types";
 import { getReticulumFetchUrl, getDirectReticulumFetchUrl } from "./phoenix-utils";
 import { ObjectContentOrigins } from "../object-types";
-import mediaHighlightFrag from "./media-highlight-frag.glsl";
-import { mapMaterials } from "./material-utils";
 import HubsTextureLoader from "../loaders/HubsTextureLoader";
-import { validMaterials } from "../components/hoverable-visuals";
 import { proxiedUrlFor, guessContentType } from "../utils/media-url-utils";
 import Linkify from "linkify-it";
 import tlds from "tlds";
@@ -258,99 +255,6 @@ export const cloneMedia = (sourceEl, template, src = null, networked = true, lin
     link ? sourceEl : null
   );
 };
-
-export function injectCustomShaderChunks(obj) {
-  const vertexRegex = /\bskinning_vertex\b/;
-  const fragRegex = /\bgl_FragColor\b/;
-
-  const shaderUniforms = [];
-  const batchManagerSystem = AFRAME.scenes[0].systems["hubs-systems"].batchManagerSystem;
-
-  obj.traverse(object => {
-    if (!object.material) return;
-
-    object.material = mapMaterials(object, material => {
-      if (material.hubs_InjectedCustomShaderChunks) return material;
-      if (!validMaterials.includes(material.type)) {
-        return material;
-      }
-
-      // HACK, this routine inadvertently leaves the A-Frame shaders wired to the old, dark
-      // material, so maps cannot be updated at runtime. This breaks UI elements who have
-      // hover/toggle state, so for now just skip these while we figure out a more correct
-      // solution.
-      if (
-        object.el.classList.contains("ui") ||
-        object.el.classList.contains("hud") ||
-        object.el.getAttribute("text-button")
-      )
-        return material;
-
-      // Used when the object is batched
-      if (batchManagerSystem.batchingEnabled) {
-        batchManagerSystem.meshToEl.set(object, obj.el);
-      }
-
-      const newMaterial = material.clone();
-      // This will not run if the object is never rendered unbatched, since its unbatched shader will never be compiled
-      newMaterial.onBeforeCompile = (shader, renderer) => {
-        if (!vertexRegex.test(shader.vertexShader)) return;
-
-        if (material.onBeforeCompile) {
-          material.onBeforeCompile(shader, renderer);
-        }
-
-        shader.uniforms.hubs_IsFrozen = { value: false };
-        shader.uniforms.hubs_EnableSweepingEffect = { value: false };
-        shader.uniforms.hubs_SweepParams = { value: [0, 0] };
-        shader.uniforms.hubs_InteractorOnePos = { value: [0, 0, 0] };
-        shader.uniforms.hubs_InteractorTwoPos = { value: [0, 0, 0] };
-        shader.uniforms.hubs_HighlightInteractorOne = { value: false };
-        shader.uniforms.hubs_HighlightInteractorTwo = { value: false };
-        shader.uniforms.hubs_Time = { value: 0 };
-
-        const vchunk = `
-        if (hubs_HighlightInteractorOne || hubs_HighlightInteractorTwo || hubs_IsFrozen) {
-          vec4 wt = modelMatrix * vec4(transformed, 1);
-
-          // Used in the fragment shader below.
-          hubs_WorldPosition = wt.xyz;
-        }
-        `;
-
-        const vlines = shader.vertexShader.split("\n");
-        const vindex = vlines.findIndex(line => vertexRegex.test(line));
-        vlines.splice(vindex + 1, 0, vchunk);
-        vlines.unshift("varying vec3 hubs_WorldPosition;");
-        vlines.unshift("uniform bool hubs_IsFrozen;");
-        vlines.unshift("uniform bool hubs_HighlightInteractorOne;");
-        vlines.unshift("uniform bool hubs_HighlightInteractorTwo;");
-        shader.vertexShader = vlines.join("\n");
-
-        const flines = shader.fragmentShader.split("\n");
-        const findex = flines.findIndex(line => fragRegex.test(line));
-        flines.splice(findex + 1, 0, mediaHighlightFrag);
-        flines.unshift("varying vec3 hubs_WorldPosition;");
-        flines.unshift("uniform bool hubs_IsFrozen;");
-        flines.unshift("uniform bool hubs_EnableSweepingEffect;");
-        flines.unshift("uniform vec2 hubs_SweepParams;");
-        flines.unshift("uniform bool hubs_HighlightInteractorOne;");
-        flines.unshift("uniform vec3 hubs_InteractorOnePos;");
-        flines.unshift("uniform bool hubs_HighlightInteractorTwo;");
-        flines.unshift("uniform vec3 hubs_InteractorTwoPos;");
-        flines.unshift("uniform float hubs_Time;");
-        shader.fragmentShader = flines.join("\n");
-
-        shaderUniforms.push(shader.uniforms);
-      };
-      newMaterial.needsUpdate = true;
-      newMaterial.hubs_InjectedCustomShaderChunks = true;
-      return newMaterial;
-    });
-  });
-
-  return shaderUniforms;
-}
 
 export function getPromotionTokenForFile(fileId) {
   return window.APP.store.state.uploadPromotionTokens.find(upload => upload.fileId === fileId);
