@@ -1,0 +1,47 @@
+@use "../styles/theme.scss";
+
+$border-width: 4px;
+$border-radius: 10px;
+$padding: 10px;
+
+:local(.video-grid) {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
+  top: $padding;
+  left: $padding;
+  :first-child {
+    margin-top: 0;
+  }
+}
+
+:local(.round-top-borders) {
+    border-top-left-radius: $border-radius;
+    border-top-right-radius: $border-radius;
+}
+
+:local(.round-bottom-borders) {
+    border-bottom-left-radius: $border-radius;
+    border-bottom-right-radius: $border-radius;
+}
+
+:local(.video-container) {
+  width: 300px;
+  border: $border-width solid gray;
+  margin-top: -$border-width;
+  display: flex;
+  justify-content: center;
+  background-color: #202020;
+}
+
+:local(.speaking) {
+  border-color: green !important;
+  z-index: 10;
+}
+
+:local(.video) {
+  width: auto;
+  max-height: 200px;
+  height: 200px;
+  object-fit: cover;
+}

@@ -77,6 +77,17 @@ function useShare(scene, hubChannel) {
     [scene, sharingSource]
   );
 
+  // const toggleShare2DCamera = useCallback(
+  //   () => {
+  //     if (sharingSource) {
+  //       scene.emit("action_end_video_sharing");
+  //     } else {
+  //       scene.emit("action_share_camera");
+  //     }
+  //   },
+  //   [scene, sharingSource]
+  // );
+
   const toggleShareScreen = useCallback(
     () => {
       if (sharingSource) {
@@ -130,6 +141,14 @@ export function SharePopoverContainer({ scene, hubChannel }) {
       onSelect: toggleShareCamera,
       active: sharingSource === "camera"
     },
+    // canShareCamera && {
+    //   id: "camera2D",
+    //   icon: VideoIcon,
+    //   color: "purple",
+    //   label: <FormattedMessage id="share-popover.source.camera" defaultMessage="Camera" />,
+    //   onSelect: toggleShareCamera,
+    //   active: sharingSource === "camera"
+    // },
     canShareScreen && {
       id: "screen",
       icon: DesktopIcon,

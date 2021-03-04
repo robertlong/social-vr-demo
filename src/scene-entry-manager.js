@@ -296,6 +296,9 @@ export default class SceneEntryManager {
           orientation: or
         });
       });
+      console.log("mediaStream _setupMedia()");
+      console.log(!(src instanceof MediaStream));
+      console.log(src);
 
       return entity;
     };
@@ -408,6 +411,13 @@ export default class SceneEntryManager {
           newStream = await navigator.mediaDevices.getDisplayMedia(constraints);
         } else {
           newStream = await navigator.mediaDevices.getUserMedia(constraints);
+          // const videoElem = document.getElementById("video");
+          // videoElem.srcObject = newStream;
+          // videoElem.play();
+          // console.log("videoElem");
+          // console.log(videoElem);
+          // console.log("video tracks count");
+          // console.log(newStream.getVideoTracks().length);
         }
       } catch (e) {
         isHandlingVideoShare = false;
@@ -440,6 +450,8 @@ export default class SceneEntryManager {
       this.scene.emit("share_video_enabled", { source: isDisplayMedia ? "screen" : "camera" });
       this.scene.addState("sharing_video");
       isHandlingVideoShare = false;
+      console.log("window.APP.store");
+      console.log(window.APP.store);
     };
 
     this.scene.addEventListener("action_share_camera", event => {
@@ -466,6 +478,11 @@ export default class SceneEntryManager {
           constraints.video.deviceId = preferredCamera;
           break;
       }
+      // <<<<<<< HEAD
+      //       console.log("action_share_camera constraints");
+      //       console.log(constraints);
+      //       shareVideoMediaStream(constraints);
+      // =======
 
       shareVideoMediaStream(constraints, false, event.detail?.target);
     });
@@ -509,6 +526,7 @@ export default class SceneEntryManager {
 
       await NAF.connection.adapter.setLocalMediaStream(mediaStream);
       currentVideoShareEntity = null;
+      NAF.connection.adapter.removeMyWebcam();
 
       this.avatarRig.setAttribute("player-info", { isSharingAvatarCamera: false });
       this.scene.emit("share_video_disabled");
