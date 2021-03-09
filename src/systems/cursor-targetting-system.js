@@ -19,7 +19,8 @@ AFRAME.registerComponent("overwrite-raycast-as-noop", {
 });
 
 export class CursorTargettingSystem {
-  constructor() {
+  constructor(scene) {
+    this.scene = scene;
     this.targets = [];
     this.setDirty = this.setDirty.bind(this);
     this.dirty = true;
@@ -59,7 +60,7 @@ export class CursorTargettingSystem {
   populateEntities(targets) {
     targets.length = 0;
     // TODO: Do not querySelectorAll on the entire scene every time anything changes!
-    const els = AFRAME.scenes[0].querySelectorAll(
+    const els = this.scene.querySelectorAll(
       ".collidable, .interactable, .ui, .drawing, .occupiable-waypoint-icon, .teleport-waypoint-icon, .avatar-inspect-collider"
     );
     for (let i = 0; i < els.length; i++) {
@@ -71,7 +72,7 @@ export class CursorTargettingSystem {
 
   remove() {
     this.observer.disconnect();
-    AFRAME.scenes[0].removeEventListener("object3dset", this.setDirty);
-    AFRAME.scenes[0].removeEventListener("object3dremove", this.setDirty);
+    this.scene.removeEventListener("object3dset", this.setDirty);
+    this.scene.removeEventListener("object3dremove", this.setDirty);
   }
 }

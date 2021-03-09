@@ -499,8 +499,8 @@ AFRAME.registerComponent("pen", {
 
   remove() {
     this.observer.disconnect();
-    AFRAME.scenes[0].removeEventListener("object3dset", this.setDirty);
-    AFRAME.scenes[0].removeEventListener("object3dremove", this.setDirty);
+    this.el.sceneEl.removeEventListener("object3dset", this.setDirty);
+    this.el.sceneEl.removeEventListener("object3dremove", this.setDirty);
     this.penSystem.deregister(this.el);
   }
 });

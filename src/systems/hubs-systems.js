@@ -39,7 +39,7 @@ AFRAME.registerSystem("hubs-systems", {
     this.cursorTogglingSystem = new CursorTogglingSystem();
     this.interactionSfxSystem = new InteractionSfxSystem();
     this.superSpawnerSystem = new SuperSpawnerSystem();
-    this.cursorTargettingSystem = new CursorTargettingSystem();
+    this.cursorTargettingSystem = new CursorTargettingSystem(this.el);
     this.positionAtBorderSystem = new PositionAtBorderSystem();
     this.physicsSystem = new PhysicsSystem(this.el.object3D);
     this.constraintsSystem = new ConstraintsSystem(this.physicsSystem);

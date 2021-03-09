@@ -33,6 +33,12 @@ AFRAME.registerSystem("camera-tools", {
   deregister(el) {
     this.cameraEls.splice(this.cameraEls.indexOf(el), 1);
     el.removeEventListener("ownership-changed", this.updateMyCamera);
+
+    if (!AFRAME.scenes[0]) {
+      // Aframe Scene was removed. Avoid other side effects.
+      return;
+    }
+
     this.updateMyCamera();
   },
 

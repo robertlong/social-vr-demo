@@ -20,6 +20,12 @@ AFRAME.registerSystem("pen-tools", {
   deregister(el) {
     this.penEls.splice(this.penEls.indexOf(el), 1);
     el.removeEventListener("ownership-changed", this.updateMyPen);
+
+    if (!AFRAME.scenes[0]) {
+      // Aframe Scene was removed. Avoid other side effects.
+      return;
+    }
+
     this.updateMyPen();
   },
 

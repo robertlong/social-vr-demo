@@ -99,7 +99,7 @@ AFRAME.registerComponent("scene-preview-camera", {
   },
 
   remove: function() {
-    const systems = AFRAME.scenes[0].systems["hubs-systems"] || AFRAME.scenes[0].systems["scene-systems"];
+    const systems = this.el.sceneEl.systems["hubs-systems"] || this.el.sceneEl.systems["scene-systems"];
 
     if (systems) {
       systems.scenePreviewCameraSystem.unregister(this.el);
