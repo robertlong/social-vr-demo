@@ -57,8 +57,6 @@ export default class DialogAdapter extends EventEmitter {
     this._frozenUpdates = new Map();
     this._pendingMediaRequests = new Map();
     this._micEnabled = true;
-    this._initialAudioConsumerPromise = null;
-    this._initialAudioConsumerResolvers = new Map();
     this._serverTimeRequests = 0;
     this._avgTimeOffset = 0;
     this._blockedClients = new Map();
@@ -383,15 +381,6 @@ export default class DialogAdapter extends EventEmitter {
 
             this.resolvePendingMediaRequestForTrack(peerId, consumer.track);
 
-            if (kind === "audio") {
-              const initialAudioResolver = this._initialAudioConsumerResolvers.get(peerId);
-
-              if (initialAudioResolver) {
-                initialAudioResolver();
-                this._initialAudioConsumerResolvers.delete(peerId);
-              }
-            }
-
             // Notify of an stream update event
             this.emit("stream_updated", peerId, kind);
           } catch (err) {
@@ -494,8 +483,6 @@ export default class DialogAdapter extends EventEmitter {
         }
       }
     });
-
-    await Promise.all([this.updateTimeOffset(), this._initialAudioConsumerPromise]);
   }
 
   newPeer(peer) {
@@ -525,15 +512,6 @@ export default class DialogAdapter extends EventEmitter {
       }
 
       this._pendingMediaRequests.delete(peerId);
-    }
-
-    // Resolve initial audio resolver since this person left.
-    const initialAudioResolver = this._initialAudioConsumerResolvers.get(peerId);
-
-    if (initialAudioResolver) {
-      initialAudioResolver();
-
-      this._initialAudioConsumerResolvers.delete(peerId);
     }
 
     delete this.occupants[peerId];
@@ -842,21 +820,16 @@ export default class DialogAdapter extends EventEmitter {
         token: this._joinToken
       });
 
-      const audioConsumerPromises = [];
       this.occupants = {};
 
-      // Create a promise that will be resolved once we attach to all the initial consumers.
-      // This will gate the connection flow until all voices will be heard.
       for (let i = 0; i < peers.length; i++) {
         const peerId = peers[i].id;
         this._onOccupantConnected(peerId);
         this.occupants[peerId] = peers[i];
         if (!peers[i].hasProducers) continue;
-        audioConsumerPromises.push(new Promise(res => this._initialAudioConsumerResolvers.set(peerId, res)));
       }
 
       this._connectSuccess(this._clientId);
-      this._initialAudioConsumerPromise = Promise.all(audioConsumerPromises);
 
       if (this._onOccupantsChanged) {
         this._onOccupantsChanged(this.occupants);
