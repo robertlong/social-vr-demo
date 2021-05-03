@@ -16,6 +16,7 @@ import { scaledThumbnailUrlFor } from "../../utils/media-url-utils";
 import { Column } from "../layout/Column";
 import { Button } from "../input/Button";
 import { Container } from "../layout/Container";
+import { ConnectionTest } from "../../react-components/debug-panel/ConnectionTest";
 
 export function HomePage() {
   const auth = useContext(AuthContext);
@@ -165,6 +166,7 @@ export function HomePage() {
           </Button>
         </Column>
       </Container>
+      <Container><ConnectionTest></ConnectionTest></Container>
     </PageContainer>
   );
 }

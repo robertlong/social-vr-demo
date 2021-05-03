@@ -1,0 +1,34 @@
+:local(.results-container) {
+  width: 100%;
+}
+
+:local(.results-table) {
+  width: 100%;
+  margin-bottom: 20px;
+}
+
+:local(.results-table) tr {
+  border-bottom: solid #DDD 1px;
+}
+
+:local(.results-table) td, :local(.results-table) th {
+  text-align: left;
+  vertical-align: top;
+  padding: 5px 20px 5px 0px;
+}
+
+:local(.results-table) th {
+  white-space: nowrap;
+}
+
+:local(.test-name) {
+  white-space: nowrap;
+}
+
+:local(.numeric) {
+  text-align: right !important;
+}
+
+:local(.action-button) {
+  margin: 0 auto;
+}
