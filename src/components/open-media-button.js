@@ -22,15 +22,15 @@ AFRAME.registerComponent("open-media-button", {
         let label = "open link";
         if (!this.data.onlyOpenLink) {
           if (await isLocalHubsAvatarUrl(src)) {
-            label = "use avatar";
+            label = "Avatar verwenden";
           } else if ((await isLocalHubsSceneUrl(src)) && mayChangeScene) {
-            label = "use scene";
+            label = "Szene wechseln";
           } else if (await isHubsRoomUrl(src)) {
             const url = new URL(this.src);
             if (url.hash && window.location.pathname === url.pathname) {
-              label = "go to";
+              label = "Betreten";
             } else {
-              label = "visit room";
+              label = "Raum betreten";
             }
           }
         }
