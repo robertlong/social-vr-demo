@@ -17,15 +17,34 @@ const DEFAULT_COLORS = {
   "favorited-color": "#FFC000"
 };
 
-function getThemeColor(name) {
+// Note: duplicated logic in react-components/styles/theme.js
+const darkmodeQuery = window.matchMedia("(prefers-color-scheme: dark)");
+let isDarkMode = darkmodeQuery.matches;
+darkmodeQuery.addEventListener("change", event => {
+  isDarkMode = event.matches;
+});
+
+function getTheme() {
+  const themes = configs.APP_CONFIG?.theme?.themes;
+  if (!Array.isArray(themes)) return;
+
   const themeId = window.APP?.store?.state?.preferences?.theme;
 
-  const theme = themeId && configs.APP_CONFIG?.theme?.themes?.find(theme => theme.id === themeId);
-  if (theme?.variables?.[name]) {
-    return theme.variables[name];
+  let theme;
+  if (themeId) {
+    theme = themes.find(t => t.id === themeId);
   }
+  if (!theme && isDarkMode) {
+    theme = themes.find(t => t.darkModeDefault);
+  }
+  if (!theme) {
+    theme = themes.find(t => t.default);
+  }
+  return theme;
+}
 
-  return DEFAULT_COLORS[name];
+function getThemeColor(name) {
+  return getTheme()?.variables?.[name] || DEFAULT_COLORS[name];
 }
 
 function activateTheme() {
