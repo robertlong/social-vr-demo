@@ -224,11 +224,11 @@ export class SpriteSystem {
     }
 
     const vertexShader = String.prototype.concat(
-      scene.renderer.vr.multiview ? multiviewVertPrefix : nonmultiviewVertPrefix,
+      scene.renderer.xr.multiview ? multiviewVertPrefix : nonmultiviewVertPrefix,
       vert
     );
     const fragmentShader = String.prototype.concat(
-      scene.renderer.vr.multiview ? multiviewFragPrefix : nonmultiviewFragPrefix,
+      scene.renderer.xr.multiview ? multiviewFragPrefix : nonmultiviewFragPrefix,
       frag
     );
 

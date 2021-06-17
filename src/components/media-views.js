@@ -17,6 +17,8 @@ import { applyPersistentSync } from "../utils/permissions-utils";
 import { refreshMediaMirror, getCurrentMirroredMedia } from "../utils/mirror-utils";
 import { detect } from "detect-browser";
 import semver from "semver";
+import { createPlaneBufferGeometry } from "../utils/three-utils";
+import HubsTextureLoader from "../loaders/HubsTextureLoader";
 
 import qsTruthy from "../utils/qs_truthy";
 
@@ -38,7 +40,7 @@ const TYPE_IMG_PNG = { type: "image/png" };
 const parseGIF = promisifyWorker(new GIFWorker());
 
 const isIOS = AFRAME.utils.device.isIOS();
-const audioIconTexture = new THREE.TextureLoader().load(audioIcon);
+const audioIconTexture = new HubsTextureLoader().load(audioIcon);
 
 export const VOLUME_LABELS = [];
 for (let i = 0; i <= 20; i++) {
@@ -1163,7 +1165,7 @@ AFRAME.registerComponent("media-image", {
           }
         }
       } else {
-        geometry = new THREE.PlaneBufferGeometry(1, 1, 1, 1, texture.flipY);
+        geometry = createPlaneBufferGeometry(1, 1, 1, 1, texture.flipY);
         material.side = THREE.DoubleSide;
       }
 
@@ -1304,7 +1306,7 @@ AFRAME.registerComponent("media-pdf", {
 
     if (!this.mesh) {
       const material = new THREE.MeshBasicMaterial();
-      const geometry = new THREE.PlaneBufferGeometry(1, 1, 1, 1, texture.flipY);
+      const geometry = createPlaneBufferGeometry(1, 1, 1, 1, texture.flipY);
       material.side = THREE.DoubleSide;
 
       this.mesh = new THREE.Mesh(geometry, material);

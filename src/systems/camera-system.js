@@ -64,7 +64,7 @@ const orbit = (function() {
     if (!target.parent) {
       // add dummy object to the scene, if this is the first time we call this function
       AFRAME.scenes[0].object3D.add(target);
-      target.applyMatrix(IDENTITY); // make sure target gets updated at least once for our matrix optimizations
+      target.applyMatrix4(IDENTITY); // make sure target gets updated at least once for our matrix optimizations
     }
     pivot.updateMatrices();
     decompose(pivot.matrixWorld, owp, owq);
@@ -107,7 +107,7 @@ const moveRigSoCameraLooksAtPivot = (function() {
     if (!target.parent) {
       // add dummy object to the scene, if this is the first time we call this function
       AFRAME.scenes[0].object3D.add(target);
-      target.applyMatrix(IDENTITY); // make sure target gets updated at least once for our matrix optimizations
+      target.applyMatrix4(IDENTITY); // make sure target gets updated at least once for our matrix optimizations
     }
 
     pivot.updateMatrices();

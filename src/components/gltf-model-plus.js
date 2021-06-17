@@ -8,6 +8,11 @@ import { disposeNode, cloneObject3D } from "../utils/three-utils";
 import HubsTextureLoader from "../loaders/HubsTextureLoader";
 import { KTX2Loader } from "three/examples/jsm/loaders/KTX2Loader";
 
+// GLTFLoader is placed under THREE. Similarly we place VRM under THREE.
+// So importing @pixiv/three-vrm/packages/three-vrm/lib/three-vrm.js,
+// rather than @pixiv/three-vrm.
+import "@pixiv/three-vrm/packages/three-vrm/lib/three-vrm";
+
 THREE.Mesh.prototype.raycast = acceleratedRaycast;
 
 class GLTFCache {
@@ -109,7 +114,11 @@ function generateMeshBVH(object3D) {
 function cloneGltf(gltf) {
   return {
     animations: gltf.scene.animations,
-    scene: cloneObject3D(gltf.scene)
+    // Currently VRM.update() for the secondary animation doesn't have an effect
+    // to cloned models. So no cloning as temporal workaroud for now.
+    // Of course it's problematic if a same model is loaded twice or more.
+    // @TODO: Fix the root issue
+    scene: gltf.scene.userData.isVRM ? gltf.scene : cloneObject3D(gltf.scene)
   };
 }
 
@@ -129,6 +138,16 @@ function getHubsComponentsFromMaterial(node) {
   const material = node.material;
 
   if (!material) {
+    return null;
+  }
+
+  // VRM model can have multi materials (material array).
+  // We want to think how we should handle it later
+  // so returning null for now.
+  // The only material component we have right now is
+  // video-texture-target. Returning null may be ok so far.
+  // @TODO: Fix me
+  if (Array.isArray(material)) {
     return null;
   }
 
@@ -501,6 +520,100 @@ class GLTFHubsTextureBasisExtension {
   }
 }
 
+class GLTFVRMPlugin {
+  constructor(parser) {
+    this.parser = parser;
+    this.name = "VRM";
+  }
+
+  afterRoot(gltf) {
+    const json = this.parser.json;
+    if (!json.extensions || !json.extensions[this.name]) {
+      return null;
+    }
+
+    THREE.VRMUtils.removeUnnecessaryJoints(gltf.scene);
+
+    return THREE.VRM.from(gltf).then(vrm => {
+      const scene = vrm.scene;
+
+      // VRM Secondary animation with Spring bones
+      // @TODO: This should be moved into the existing or new VRM animation system
+      // @TODO: Currently the secondary animation doesn't work correctly
+      // if the model's scale is non-zero. If we place a 3D object its scale
+      // is controled to let the model be fit into a certain size and
+      // the secondary animation will look weird. Fix the root issue in THREE.VRM.
+      // @TODO: Evaluate the secondary animation performance. If it's slow,
+      // consider to load off from the main thread to workers.
+      // @TODO: Should owner handle the secondary animation and send transforms to
+      // other peers rather than handling it in all peers?
+      const clock = new THREE.Clock();
+      const animate = () => {
+        requestAnimationFrame(animate);
+        vrm.update(clock.getDelta());
+      };
+      animate();
+
+      // Add key frame animation clip for animation + VRM test
+      // @TODO: Remove in the production
+      gltf.animations.push(this._createAnimationClipForTest(scene, vrm));
+
+      // Allow to detect the VRM model
+      // @TODO: Think of better solution?
+      scene.userData.isVRM = true;
+
+      // For debug
+      // @TODO: Remove in the production
+      console.log(vrm);
+    });
+  }
+
+  _createAnimationClipForTest(scene, vrm) {
+    const quatA = new THREE.Quaternion(0.0, 0.0, 0.0, 1.0);
+    const quatB = new THREE.Quaternion(0.0, 0.0, 0.0, 1.0);
+    quatB.setFromEuler(new THREE.Euler(0.0, 0.0, 0.25 * Math.PI));
+
+    const blinkTrack = new THREE.NumberKeyframeTrack(
+      vrm.blendShapeProxy.getBlendShapeTrackName(THREE.VRMSchema.BlendShapePresetName.Blink), // name
+      [0.0, 0.5, 1.0], // times
+      [0.0, 2.0, 0.0] // values
+    );
+
+    const leftArmTrack = new THREE.QuaternionKeyframeTrack(
+      vrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.LeftUpperArm).name + ".quaternion", // name
+      [0.0, 1.0, 2.0], // times
+      [...quatA.toArray(), ...quatB.toArray(), ...quatA.toArray()] // values
+    );
+
+    quatB.setFromEuler(new THREE.Euler(0.25 * Math.PI, 0, 0));
+    const rightArmTrack = new THREE.QuaternionKeyframeTrack(
+      vrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.RightUpperArm).name + ".quaternion", // name
+      [0.0, 1.0, 2.0], // times
+      [...quatA.toArray(), ...quatB.toArray(), ...quatA.toArray()] // values
+    );
+
+    quatA.setFromEuler(new THREE.Euler(0.0, -0.25 * Math.PI, 0));
+    quatB.setFromEuler(new THREE.Euler(0.0, 0.25 * Math.PI, 0));
+    const neckTrack = new THREE.QuaternionKeyframeTrack(
+      vrm.humanoid.getBoneNode(THREE.VRMSchema.HumanoidBoneName.Neck).name + ".quaternion", // name
+      [0.0, 1.0, 2.0], // times
+      [...quatA.toArray(), ...quatB.toArray(), ...quatA.toArray()] // values
+    );
+
+    const clip = new THREE.AnimationClip("animation", 2.0, [blinkTrack, leftArmTrack, rightArmTrack, neckTrack]);
+
+    for (const track of clip.tracks) {
+      const parsedPath = THREE.PropertyBinding.parseTrackName(track.name);
+      const node = THREE.PropertyBinding.findNode(scene, parsedPath.nodeName);
+      if (node) {
+        track.name = track.name.replace(/^[^.]*\./, node.uuid + ".");
+      }
+    }
+
+    return clip;
+  }
+}
+
 export async function loadGLTF(src, contentType, onProgress, jsonPreprocessor) {
   let gltfUrl = src;
   let fileMap;
@@ -516,7 +629,8 @@ export async function loadGLTF(src, contentType, onProgress, jsonPreprocessor) {
   gltfLoader
     .register(parser => new GLTFHubsPlugin(parser, jsonPreprocessor))
     .register(parser => new GLTFHubsLightMapExtension(parser))
-    .register(parser => new GLTFHubsTextureBasisExtension(parser));
+    .register(parser => new GLTFHubsTextureBasisExtension(parser))
+    .register(parser => new GLTFVRMPlugin(parser));
 
   // TODO some models are loaded before the renderer exists. This is likely things like the camera tool and loading cube.
   // They don't currently use KTX textures but if they did this would be an issue. Fixing this is hard but is part of

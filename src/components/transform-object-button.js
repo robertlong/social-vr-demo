@@ -142,7 +142,7 @@ AFRAME.registerSystem("transform-selected-object", {
         if (qAlmostEquals(q, this.startQ)) {
           q.multiply(PI_AROUND_Y);
           this.target.parent.getWorldQuaternion(pInv);
-          pInv.inverse();
+          pInv.invert();
           this.target.quaternion.copy(pInv).multiply(q);
           this.target.matrixNeedsUpdate = true;
         }
@@ -216,7 +216,7 @@ AFRAME.registerSystem("transform-selected-object", {
     if (this.mode === TRANSFORM_MODE.PUPPET) {
       this.target.getWorldQuaternion(this.puppet.initialObjectOrientation);
       this.hand.getWorldQuaternion(this.puppet.initialControllerOrientation);
-      this.puppet.initialControllerOrientation_inverse.copy(this.puppet.initialControllerOrientation).inverse();
+      this.puppet.initialControllerOrientation_inverse.copy(this.puppet.initialControllerOrientation).invert();
       return;
     }
 
@@ -276,7 +276,7 @@ AFRAME.registerSystem("transform-selected-object", {
     finalProjectedVec
       .copy(deltaOnPlane)
       .projectOnPlane(normal)
-      .applyQuaternion(q.copy(plane.quaternion).inverse())
+      .applyQuaternion(q.copy(plane.quaternion).invert())
       .multiplyScalar(SENSITIVITY / cameraToPlaneDistance);
     if (this.mode === TRANSFORM_MODE.CURSOR) {
       const modify = AFRAME.scenes[0].systems.userinput.get(paths.actions.transformModifier);
