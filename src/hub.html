@@ -911,6 +911,16 @@
                     <a-entity class="ui video-link-button" visible="false" mixin="rounded-text-action-button ui" is-remote-hover-target tags="singleActionButton: true; isHoverMenuChild: true;" open-media-button scale="0.8 0.8 0.8" position="0 -0.300 0.001">
                         <a-entity text="value:open link; width:1.5; align:center;" text-raycast-hack position="0 0 0.02"></a-entity>
                     </a-entity>
+                    <a-entity
+                        is-remote-hover-target
+                        tags="singleActionButton: true; isHoverMenuChild: true;"
+                        sprite
+                        icon-button="image: snap.png; hoverImage: snap-hover.png; activeImage: snap.png; activeHoverImage: snap-hover.png"
+                        visibility-on-content-types="contentTypes: video/mp4; contentSubtype: video-camera; visible: false;"
+                        scale="0.075 0.075 0.075"
+                        position="0 -0.15 0"
+                        class="video-filters-button"
+                    ></a-entity>
                 </a-entity>
             </template>
 

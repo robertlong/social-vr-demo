@@ -288,6 +288,7 @@ AFRAME.registerComponent("media-video", {
     this.snap = this.snap.bind(this);
     this.changeVolumeBy = this.changeVolumeBy.bind(this);
     this.togglePlaying = this.togglePlaying.bind(this);
+    this.toggleVideoFilters = this.toggleVideoFilters.bind(this);
 
     this.distanceBasedAttenuation = 1;
 
@@ -315,6 +316,7 @@ AFRAME.registerComponent("media-video", {
       this.timeLabel = this.el.querySelector(".video-time-label");
       this.volumeLabel = this.el.querySelector(".video-volume-label");
       this.linkButton = this.el.querySelector(".video-link-button");
+      this.videoFiltersButton = this.el.querySelector(".video-filters-button");
 
       this.playPauseButton.object3D.addEventListener("interact", this.togglePlaying);
       this.seekForwardButton.object3D.addEventListener("interact", this.seekForward);
@@ -322,6 +324,7 @@ AFRAME.registerComponent("media-video", {
       this.volumeUpButton.object3D.addEventListener("interact", this.volumeUp);
       this.volumeDownButton.object3D.addEventListener("interact", this.volumeDown);
       this.snapButton.object3D.addEventListener("interact", this.snap);
+      this.videoFiltersButton.object3D.addEventListener("interact", this.toggleVideoFilters);
 
       this.updateVolumeLabel();
       this.updateHoverMenu();
@@ -1040,6 +1043,10 @@ AFRAME.registerComponent("media-video", {
     }
 
     window.APP.store.removeEventListener("statechanged", this.onPreferenceChanged);
+  },
+
+  toggleVideoFilters() {
+    this.el.sceneEl.emit("toggle_camera_filters_menu");
   }
 });
 

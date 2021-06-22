@@ -78,6 +78,7 @@ import { PlacePopoverContainer } from "./room/PlacePopoverContainer";
 import { SharePopoverContainer } from "./room/SharePopoverContainer";
 import { VoiceButtonContainer } from "./room/VoiceButtonContainer";
 import { ReactionPopoverContainer } from "./room/ReactionPopoverContainer";
+import { CameraFiltersContainer } from "./room/CameraFiltersContainer";
 import { SafariMicModal } from "./room/SafariMicModal";
 import { RoomSignInModalContainer } from "./auth/RoomSignInModalContainer";
 import { SignInStep } from "./auth/SignInModal";
@@ -308,6 +309,9 @@ class UIRoot extends Component {
     );
     this.props.scene.addEventListener("devicechange", () => {
       this.forceUpdate();
+    });
+    this.props.scene.addEventListener("toggle_camera_filters_menu", () => {
+      this.toggleSidebar("camera-filters");
     });
 
     const scene = this.props.scene;
@@ -1493,6 +1497,9 @@ class UIRoot extends Component {
                           onClose={() => this.setSidebar(null)}
                           onChangeScene={this.onChangeScene}
                         />
+                      )}
+                      {this.state.sidebarId === "camera-filters" && (
+                        <CameraFiltersContainer onClose={() => this.setSidebar(null)} store={this.props.store} />
                       )}
                     </>
                   ) : (
