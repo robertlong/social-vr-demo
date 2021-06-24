@@ -1,3 +1,4 @@
+import { getCurrentHubId } from "./utils/hub-utils";
 import "./utils/debug-log";
 import "./webxr-bypass-hacks";
 import configs from "./utils/configs";
@@ -678,14 +679,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   const defaultRoomId = configs.feature("default_room_id");
-
-  const hubId =
-    qs.get("hub_id") ||
-    (document.location.pathname === "/" && defaultRoomId
-      ? defaultRoomId
-      : document.location.pathname.substring(1).split("/")[0]);
+  const hubId = getCurrentHubId();
   console.log(`Hub ID: ${hubId}`);
-
   if (!defaultRoomId) {
     // Default room won't work if account is required to access
     checkForAccountRequired();
