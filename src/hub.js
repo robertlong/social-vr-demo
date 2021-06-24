@@ -583,8 +583,39 @@ function handleHubChannelJoined(entryManager, hubChannel, messageDispatch, data,
     while (!scene.components["networked-scene"] || !scene.components["networked-scene"].data) await nextTick();
 
     const loadEnvironmentAndConnect = () => {
+      updateEnvironmentForHub(hub, entryManager);
+
       APP.dialog.setClientId(data.session_id);
       APP.dialog.setTurnConfig(qs.get("force_turn"), qs.get("force_tcp"));
+
+      let connectionErrorTimeout;
+      APP.dialog.setReconnectionListeners(
+        async () => {
+          const serverParams = await hubChannel.getHost();
+          const { host, port } = serverParams;
+          const newServerURL = `wss://${host}:${port}`;
+          // If the Dialog server url has changed, the server has rolled over and we need to reconnect using an updated server URL.
+          if (APP.dialog.serverUrl !== newServerURL) {
+            console.error(`The Dialog server has changed to ${newServerURL}, reconnecting with the new server...`);
+            scene.setAttribute("networked-scene", { serverURL: newServerURL });
+            APP.dialog.setServerUrl(newServerURL);
+            APP.dialog.setServerParams(serverParams);
+            APP.dialog.reconnect();
+          }
+          // Safety guard to show the connection error screen in case we can't reconnect after 30 seconds
+          if (!connectionErrorTimeout) {
+            connectionErrorTimeout = setTimeout(() => {
+              APP.dialog.disconnect();
+              onConnectionError(entryManager, "Timeout trying to reconnect to the room");
+            }, 30000);
+          }
+        },
+        () => {
+          clearTimeout(connectionErrorTimeout);
+          connectionErrorTimeout = null;
+        }
+      );
+
       APP.dialog.connect({
         serverUrl: `wss://${hub.host}:${hub.port}`,
         hubId: hub.hub_id,
@@ -592,8 +623,6 @@ function handleHubChannelJoined(entryManager, hubChannel, messageDispatch, data,
         serverParams: { host: hub.host, port: hub.port, turn: hub.turn },
         scene
       });
-
-      updateEnvironmentForHub(hub, entryManager);
 
       scene.addEventListener(
         "adapter-ready",
@@ -1200,34 +1229,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       const permsToken = oauthFlowPermsToken || data.perms_token;
       hubChannel.setPermissionsFromToken(permsToken);
-
-      let connectionErrorTimeout;
-      APP.dialog.setReconnectionListeners(
-        async () => {
-          const serverParams = await hubChannel.getHost();
-          const { host, port } = serverParams;
-          const newServerURL = `wss://${host}:${port}`;
-          // If the Dialog server url has changed, the server has rolled over and we need to reconnect using an updated server URL.
-          if (APP.dialog.serverUrl !== newServerURL) {
-            console.error(`The Dialog server has changed to ${newServerURL}, reconnecting with the new server...`);
-            scene.setAttribute("networked-scene", { serverURL: newServerURL });
-            APP.dialog.setServerUrl(newServerURL);
-            APP.dialog.setServerParams(serverParams);
-            APP.dialog.reconnect();
-          }
-          // Safety guard to show the connection error screen in case we can't reconnect after 30 seconds
-          if (!connectionErrorTimeout) {
-            connectionErrorTimeout = setTimeout(() => {
-              APP.dialog.disconnect();
-              onConnectionError(entryManager, "Timeout trying to reconnect to the room");
-            }, 30000);
-          }
-        },
-        () => {
-          clearTimeout(connectionErrorTimeout);
-          connectionErrorTimeout = null;
-        }
-      );
 
       subscriptions.setHubChannel(hubChannel);
       subscriptions.setSubscribed(data.subscriptions.web_push);
