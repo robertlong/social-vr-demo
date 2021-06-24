@@ -721,6 +721,8 @@ document.addEventListener("DOMContentLoaded", async () => {
   const authChannel = new AuthChannel(store);
   const hubChannel = new HubChannel(store, hubId);
   window.APP.hubChannel = hubChannel;
+
+  store.addEventListener("profilechanged", hubChannel.sendProfileUpdate.bind(hubChannel));
   const entryManager = new SceneEntryManager(hubChannel, authChannel, history);
   window.APP.entryManager = entryManager;
 
@@ -1185,7 +1187,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   });
 
-  let isInitialJoin = true;
   hubPhxChannel
     .join()
     .receive("ok", async data => {
@@ -1196,11 +1197,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
       socket.params().session_id = data.session_id;
       socket.params().session_token = data.session_token;
-
-      if (isInitialJoin) {
-        store.addEventListener("profilechanged", hubChannel.sendProfileUpdate.bind(hubChannel));
-      }
-      isInitialJoin = false;
 
       const permsToken = oauthFlowPermsToken || data.perms_token;
       hubChannel.setPermissionsFromToken(permsToken);
