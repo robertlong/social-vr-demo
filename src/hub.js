@@ -688,6 +688,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   subscriptions.register();
 
   const scene = document.querySelector("a-scene");
+  window.APP.scene = scene;
   scene.renderer.debug.checkShaderErrors = false;
 
   // HACK - Trigger initial batch preparation with an invisible object
@@ -700,7 +701,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     physicsSystem.setDebug(isDebug || physicsSystem.debug);
     patchThreeAllocations();
   };
-
   if (scene.hasLoaded) {
     onSceneLoaded();
   } else {
@@ -715,13 +715,12 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const authChannel = new AuthChannel(store);
   const hubChannel = new HubChannel(store, hubId);
+  window.APP.hubChannel = hubChannel;
   const entryManager = new SceneEntryManager(hubChannel, authChannel, history);
   window.APP.entryManager = entryManager;
 
-  window.APP.scene = scene;
   const audioSystem = scene.systems["hubs-systems"].audioSystem;
   window.APP.mediaDevicesManager = new MediaDevicesManager(scene, store, audioSystem);
-  window.APP.hubChannel = hubChannel;
 
   const performConditionalSignIn = async (predicate, action, signInMessage, onFailure) => {
     if (predicate()) return action();
@@ -791,7 +790,6 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     return false;
   };
-
   remountUI({ availableVREntryTypes: ONLY_SCREEN_AVAILABLE, checkingForDeviceAvailability: true });
   const availableVREntryTypesPromise = getAvailableVREntryTypes();
   scene.addEventListener("enter-vr", () => {
@@ -811,7 +809,6 @@ document.addEventListener("DOMContentLoaded", async () => {
       }
     });
   });
-
   handleEarlyVRMode();
 
   // HACK A-Frame 0.9.0 seems to fail to wire up vrdisplaypresentchange early enough
