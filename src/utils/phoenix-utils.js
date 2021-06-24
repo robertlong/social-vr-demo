@@ -1,6 +1,7 @@
 import { Socket } from "phoenix";
 import { generateHubName } from "../utils/name-generation";
 import configs from "../utils/configs";
+import { sleep } from "../utils/async-utils";
 
 import Store from "../storage/store";
 
@@ -370,3 +371,32 @@ export function presenceEventsForHub(events) {
     onChange
   };
 }
+
+export const tryGetMatchingMeta = async ({ ret_pool, ret_version }, shouldAbandonMigration) => {
+  const backoffMS = 5000;
+  const randomMS = 15000;
+  const maxAttempts = 10;
+  let didMatchMeta = false;
+  let attempt = 0;
+  while (!didMatchMeta && attempt < maxAttempts && !shouldAbandonMigration()) {
+    try {
+      // Add randomness to the first request avoid flooding reticulum.
+      const delayMS = attempt * backoffMS + (attempt === 0 ? Math.random() * randomMS : 0);
+      console.log(
+        `[reconnect] Getting reticulum meta in ${Math.ceil(delayMS / 1000)} seconds.${
+          attempt ? ` (Attempt ${attempt + 1} of ${maxAttempts})` : ""
+        }`
+      );
+      await sleep(delayMS);
+      invalidateReticulumMeta();
+      console.log(`[reconnect] Getting reticulum meta.${attempt ? ` (Attempt ${attempt + 1} of ${maxAttempts})` : ""}`);
+      const { pool, version } = await getReticulumMeta();
+      didMatchMeta = ret_pool === pool && ret_version === version;
+    } catch {
+      didMatchMeta = false;
+    }
+
+    attempt = attempt + 1;
+  }
+  return didMatchMeta;
+};
