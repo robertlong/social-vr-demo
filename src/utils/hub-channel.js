@@ -107,7 +107,7 @@ export default class HubChannel extends EventTarget {
   async migrateToHub(hubId) {
     let presenceBindings;
 
-    const newChannel = this.channel.socket.channel(`hub:${hubId}`, APP.createHubChannelParams());
+    const newChannel = this.channel.socket.channel(`hub:${hubId}`, APP.hubChannelParamsForPermsToken());
     const data = await migrateToChannel(this.channel, newChannel);
 
     if (this.presence) {

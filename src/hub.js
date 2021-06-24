@@ -1,4 +1,9 @@
-import { getCurrentHubId, updateVRHudPresenceCount, updateSceneCopresentState } from "./utils/hub-utils";
+import {
+  getCurrentHubId,
+  updateVRHudPresenceCount,
+  updateSceneCopresentState,
+  createHubChannelParams
+} from "./utils/hub-utils";
 import "./utils/debug-log";
 import "./webxr-bypass-hacks";
 import configs from "./utils/configs";
@@ -1003,41 +1008,18 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const pushSubscriptionEndpoint = await subscriptions.getCurrentEndpoint();
 
-  const oauthFlowPermsToken = Cookies.get(OAUTH_FLOW_PERMS_TOKEN_KEY);
-  if (oauthFlowPermsToken) {
-    Cookies.remove(OAUTH_FLOW_PERMS_TOKEN_KEY);
-  }
-
-  const createHubChannelParams = permsToken => {
-    const params = {
+  APP.hubChannelParamsForPermsToken = permsToken => {
+    return createHubChannelParams({
       profile: store.state.profile,
-      push_subscription_endpoint: pushSubscriptionEndpoint,
-      auth_token: null,
-      perms_token: null,
-      context: {
-        mobile: isMobile || isMobileVR,
-        embed: isEmbed
-      },
-      hub_invite_id: qs.get("hub_invite_id")
-    };
-
-    if (isMobileVR) {
-      params.context.hmd = true;
-    }
-
-    if (permsToken) {
-      params.perms_token = permsToken;
-    }
-
-    const { token } = store.state.credentials;
-    if (token) {
-      console.log(`Logged into account ${store.credentialsAccountId}`);
-      params.auth_token = token;
-    }
-
-    return params;
+      pushSubscriptionEndpoint,
+      permsToken,
+      isMobile,
+      isMobileVR,
+      isEmbed,
+      hubInviteId: qs.get("hub_invite_id"),
+      authToken: store.state.credentials && store.state.credentials.token
+    });
   };
-  APP.createHubChannelParams = createHubChannelParams;
 
   const migrateToNewReticulumServer = async ({ ret_version, ret_pool }, shouldAbandonMigration) => {
     console.log(`[reconnect] Reticulum deploy detected v${ret_version} on ${ret_pool}.`);
@@ -1052,7 +1034,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     const oldSocket = APP.retChannel.socket;
     const socket = await connectToReticulum(isDebug, oldSocket.params());
     APP.retChannel = await migrateChannelToSocket(APP.retChannel, socket);
-    await hubChannel.migrateToSocket(socket, createHubChannelParams());
+    await hubChannel.migrateToSocket(socket, APP.hubChannelParamsForPermsToken());
     authChannel.setSocket(socket);
     linkChannel.setSocket(socket);
 
@@ -1105,7 +1087,11 @@ document.addEventListener("DOMContentLoaded", async () => {
   APP.messageDispatch = messageDispatch;
   document.getElementById("avatar-rig").messageDispatch = messageDispatch;
 
-  const hubPhxChannel = socket.channel(`hub:${hubId}`, createHubChannelParams(oauthFlowPermsToken));
+  const oauthFlowPermsToken = Cookies.get(OAUTH_FLOW_PERMS_TOKEN_KEY);
+  if (oauthFlowPermsToken) {
+    Cookies.remove(OAUTH_FLOW_PERMS_TOKEN_KEY);
+  }
+  const hubPhxChannel = socket.channel(`hub:${hubId}`, APP.hubChannelParamsForPermsToken(oauthFlowPermsToken));
   hubChannel.channel = hubPhxChannel;
   hubChannel.presence = new Presence(hubPhxChannel);
   const { rawOnJoin, rawOnLeave } = denoisePresence(presenceEventsForHub(events));
