@@ -873,11 +873,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  scene.addEventListener("action_focus_chat", () => {
-    const chatFocusTarget = document.querySelector(".chat-focus-target");
-    chatFocusTarget && chatFocusTarget.focus();
-  });
-
   scene.addEventListener("leave_room_requested", () => {
     entryManager.exitScene();
     remountUI({ roomUnavailableReason: ExitReason.left });
