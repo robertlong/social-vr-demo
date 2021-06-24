@@ -558,12 +558,12 @@ function handleHubChannelJoined(entryManager, hubChannel, messageDispatch, data,
     });
   });
 
-  const objectsScene = document.querySelector("#objects-scene");
-  const objectsUrl = getReticulumFetchUrl(`/${hub.hub_id}/objects.gltf`);
-  const objectsEl = document.createElement("a-entity");
   scene.addEventListener("adapter-ready", () => {
     // Append objects once adapter is ready since ownership may be taken.
     // TODO: We aren't actually connected yet when adapter-ready fires. Should we do this after we finish connecting to NAF?
+    const objectsScene = document.querySelector("#objects-scene");
+    const objectsUrl = getReticulumFetchUrl(`/${hub.hub_id}/objects.gltf`);
+    const objectsEl = document.createElement("a-entity");
 
     objectsEl.setAttribute("gltf-model-plus", { src: objectsUrl, useCache: false, inflate: true });
 
