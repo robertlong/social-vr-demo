@@ -1101,8 +1101,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     }
   });
 
-  const hubPhxChannel = socket.channel(`hub:${hubId}`, createHubChannelParams(oauthFlowPermsToken));
-
   const presenceLogEntries = [];
   const addToPresenceLog = entry => {
     entry.key = Date.now().toString();
@@ -1136,6 +1134,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   APP.messageDispatch = messageDispatch;
   document.getElementById("avatar-rig").messageDispatch = messageDispatch;
 
+  const hubPhxChannel = socket.channel(`hub:${hubId}`, createHubChannelParams(oauthFlowPermsToken));
   hubChannel.channel = hubPhxChannel;
   hubChannel.presence = new Presence(hubPhxChannel);
   const { rawOnJoin, rawOnLeave } = denoisePresence(presenceEventsForHub(events));
