@@ -685,23 +685,7 @@ document.addEventListener("DOMContentLoaded", async () => {
 
   const subscriptions = new Subscriptions(hubId);
   APP.subscriptions = subscriptions;
-
-  if (navigator.serviceWorker) {
-    try {
-      navigator.serviceWorker
-        .register("/hub.service.js")
-        .then(() => {
-          navigator.serviceWorker.ready
-            .then(registration => subscriptions.setRegistration(registration))
-            .catch(() => subscriptions.setRegistrationFailed());
-        })
-        .catch(() => subscriptions.setRegistrationFailed());
-    } catch (e) {
-      subscriptions.setRegistrationFailed();
-    }
-  } else {
-    subscriptions.setRegistrationFailed();
-  }
+  subscriptions.register();
 
   const scene = document.querySelector("a-scene");
   scene.renderer.debug.checkShaderErrors = false;
