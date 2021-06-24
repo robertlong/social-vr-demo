@@ -943,17 +943,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   const environmentScene = document.querySelector("#environment-scene");
-
-  const onFirstEnvironmentLoad = () => {
-    // Replace renderer with a noop renderer to reduce bot resource usage.
-    if (isBotMode) {
-      runBotMode(scene, entryManager);
-    }
-
-    environmentScene.removeEventListener("model-loaded", onFirstEnvironmentLoad);
-  };
-
-  environmentScene.addEventListener("model-loaded", onFirstEnvironmentLoad);
+  environmentScene.addEventListener(
+    "model-loaded",
+    () => {
+      // Replace renderer with a noop renderer to reduce bot resource usage.
+      if (isBotMode) {
+        runBotMode(scene, entryManager);
+      }
+    },
+    { once: true }
+  );
 
   environmentScene.addEventListener("model-loaded", ({ detail: { model } }) => {
     if (!scene.is("entered")) {
