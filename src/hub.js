@@ -1,4 +1,4 @@
-import { getCurrentHubId } from "./utils/hub-utils";
+import { getCurrentHubId, updateVRHudPresenceCount, updateSceneCopresentState } from "./utils/hub-utils";
 import "./utils/debug-log";
 import "./webxr-bypass-hacks";
 import configs from "./utils/configs";
@@ -1115,27 +1115,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     events.trigger(`hub:sync`, { presence: hubChannel.presence });
   });
 
-  events.on(`hub:sync`, ({ presence }) => {
-    const vrHudPresenceCount = document.querySelector("#hud-presence-count");
-
-    const sessionIds = Object.getOwnPropertyNames(presence.state);
-    const occupantCount = sessionIds.length;
-    vrHudPresenceCount.setAttribute("text", "value", occupantCount.toString());
-
-    if (occupantCount > 1) {
-      scene.addState("copresent");
-    } else {
-      scene.removeState("copresent");
-    }
-  });
-  events.on(`hub:sync`, ({ presence }) => {
-    remountUI({
-      sessionId: socket.params().session_id,
-      presences: presence.state,
-      entryDisallowed: !hubChannel.canEnterRoom(uiProps.hub)
-    });
-  });
-
   events.on(`hub:join`, ({ key, meta }) => {
     if (
       APP.suppressPresenceMessages ||
@@ -1207,6 +1186,17 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
   events.on(`hub:sync`, () => {
     APP.suppressPresenceMessages = false;
+  });
+  events.on(`hub:sync`, updateVRHudPresenceCount);
+  events.on(`hub:sync`, ({ presence }) => {
+    updateSceneCopresentState(presence, scene);
+  });
+  events.on(`hub:sync`, ({ presence }) => {
+    remountUI({
+      sessionId: socket.params().session_id,
+      presences: presence.state,
+      entryDisallowed: !hubChannel.canEnterRoom(uiProps.hub)
+    });
   });
 
   let isInitialJoin = true;

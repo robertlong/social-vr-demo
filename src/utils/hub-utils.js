@@ -10,3 +10,17 @@ export function getCurrentHubId() {
       : document.location.pathname.substring(1).split("/")[0])
   );
 }
+
+export function updateVRHudPresenceCount({ presence }) {
+  const occupantCount = Object.getOwnPropertyNames(presence.state).length;
+  const vrHudPresenceCount = document.querySelector("#hud-presence-count");
+  vrHudPresenceCount.setAttribute("text", "value", occupantCount.toString());
+}
+export function updateSceneCopresentState(presence, scene) {
+  const occupantCount = Object.getOwnPropertyNames(presence.state).length;
+  if (occupantCount > 1) {
+    scene.addState("copresent");
+  } else {
+    scene.removeState("copresent");
+  }
+}
