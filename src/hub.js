@@ -1116,6 +1116,16 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   events.on(`hub:join`, ({ key, meta }) => {
+    scene.emit("presence_updated", {
+      sessionId: key,
+      profile: meta.profile,
+      roles: meta.roles,
+      permissions: meta.permissions,
+      streaming: meta.streaming,
+      recording: meta.recording
+    });
+  });
+  events.on(`hub:join`, ({ key, meta }) => {
     if (
       APP.suppressPresenceMessages ||
       key === hubChannel.channel.socket.params().session_id ||
@@ -1140,16 +1150,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     });
   });
 
-  events.on(`hub:join`, ({ key, meta }) => {
-    scene.emit("presence_updated", {
-      sessionId: key,
-      profile: meta.profile,
-      roles: meta.roles,
-      permissions: meta.permissions,
-      streaming: meta.streaming,
-      recording: meta.recording
-    });
-  });
   events.on(`hub:change`, ({ key, previous, current }) => {
     if (
       previous.presence === current.presence ||
