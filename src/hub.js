@@ -1127,7 +1127,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
   events.on(`hub:join`, ({ key, meta }) => {
     if (
-      APP.suppressPresenceMessages ||
+      APP.hideHubPresenceEvents ||
       key === hubChannel.channel.socket.params().session_id ||
       hubChannel.presence.list().length > NOISY_OCCUPANT_COUNT
     ) {
@@ -1141,7 +1141,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   });
 
   events.on(`hub:leave`, ({ meta }) => {
-    if (APP.suppressPresenceMessages || hubChannel.presence.list().length > NOISY_OCCUPANT_COUNT) {
+    if (APP.hideHubPresenceEvents || hubChannel.presence.list().length > NOISY_OCCUPANT_COUNT) {
       return;
     }
     messageDispatch.receive({
@@ -1185,7 +1185,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     presenceSync.resolve();
   });
   events.on(`hub:sync`, () => {
-    APP.suppressPresenceMessages = false;
+    APP.hideHubPresenceEvents = false;
   });
   events.on(`hub:sync`, updateVRHudPresenceCount);
   events.on(`hub:sync`, ({ presence }) => {
@@ -1203,7 +1203,7 @@ document.addEventListener("DOMContentLoaded", async () => {
   hubPhxChannel
     .join()
     .receive("ok", async data => {
-      APP.suppressPresenceMessages = true;
+      APP.hideHubPresenceEvents = true;
       presenceSync.promise = new Promise(resolve => {
         presenceSync.resolve = resolve;
       });

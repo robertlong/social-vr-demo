@@ -27,7 +27,7 @@ function loadRoomObjects(hubId) {
 
 export async function changeHub(hubId, addToHistory = true) {
   // Suppress on-screen join and leave messages until we receive a sync.
-  APP.suppressPresenceMessages = true;
+  APP.hideHubPresenceEvents = true;
   const scene = AFRAME.scenes[0];
 
   let data;
