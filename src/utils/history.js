@@ -34,6 +34,9 @@ function pushOrUpdateHistory(history, replace, k, v, detail, newPathname, newSea
 
   const search = newSearch !== undefined ? newSearch : history.location.search;
 
+  // Hash can't be overriden like the other elements, but needs to be preserved for things like deep linking waypoints
+  const hash = history.location.hash;
+
   // If popToBeginningOfHubHistory was previously used, there is a duplicate entry
   // at the top of the history stack (which was needed to wipe out forward history)
   // so we use this opportunity to replace it.
@@ -41,7 +44,7 @@ function pushOrUpdateHistory(history, replace, k, v, detail, newPathname, newSea
   const method = replace || isDuplicate ? history.replace : history.push;
   state.__historyLength = newLength;
 
-  method({ pathname, search, state });
+  method({ pathname, search, state, hash });
 }
 
 export function pushHistoryState(history, k, v, detail) {
