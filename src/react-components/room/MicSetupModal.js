@@ -65,8 +65,7 @@ export function MicSetupModal({
             }
             className={classNames(styles.largeToolbarButton, styles.micButton)}
             iconContainerClassName={styles.micButtonContainer}
-            onClick={onPromptMicrophone}
-            disabled={microphoneEnabled}
+            onClick={onChangeMicrophoneMuted}
             large
           >
             <div
@@ -106,6 +105,7 @@ export function MicSetupModal({
               </svg>
             </div>
           </ToolbarButton>
+
           <ToolbarButton
             icon={soundPlaying ? <VolumeHighIcon width={48} height={48} /> : <VolumeOffIcon width={48} height={48} />}
             label={<FormattedMessage id="mic-setup-modal.test-audio" defaultMessage="Click to Test Audio" />}
@@ -115,6 +115,12 @@ export function MicSetupModal({
             large
           />
         </div>
+        {!microphoneOptions.length && (
+          <p className={styles.micNotFound}>
+           
+            <FormattedMessage id="mic-setup-modal.mic-not-found" defaultMessage="No audio device found" />
+          </p>
+        )}
         <>
           <SelectInputField value={selectedMicrophone} options={microphoneOptions} onChange={onChangeMicrophone} />
           <ToggleInput
