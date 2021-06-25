@@ -13,6 +13,7 @@ import { ViveControllerDevice } from "./devices/vive-controller";
 import { WindowsMixedRealityControllerDevice } from "./devices/windows-mixed-reality-controller";
 import { WebXRControllerDevice } from "./devices/webxr-controller";
 import { GyroDevice } from "./devices/gyro";
+import { GestureTracking } from "./devices/gesture-tracking";
 
 import { AppAwareMouseDevice } from "./devices/app-aware-mouse";
 import { AppAwareTouchscreenDevice } from "./devices/app-aware-touchscreen";
@@ -248,6 +249,7 @@ AFRAME.registerSystem("userinput", {
       this.activeDevices.add(new MouseDevice());
       this.activeDevices.add(new AppAwareMouseDevice());
       this.activeDevices.add(new KeyboardDevice());
+      this.activeDevices.add(new GestureTracking());
     } else if (!isMobileVR || forceEnableTouchscreen) {
       this.activeDevices.add(new AppAwareTouchscreenDevice());
       this.activeDevices.add(new KeyboardDevice());
