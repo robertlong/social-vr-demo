@@ -458,7 +458,7 @@ class ImportContentComponent extends Component {
           >
             Find Avatars &amp; Scenes
           </Button>
-          <Typography variant="subheading" gutterBottom className={this.props.classes.section}>
+          <Typography variant="h6" gutterBottom className={this.props.classes.section}>
             Importing Content
           </Typography>
           <Typography variant="body1" gutterBottom>
@@ -536,7 +536,7 @@ class ImportContentComponent extends Component {
           {!this.state.isLoading && unimportedCount > 0 && (
             <div>
               <p />
-              <Typography variant="subheading" gutterBottom>
+              <Typography variant="h6" gutterBottom>
                 Next, choose the content you&apos;d like to import, and which content flags to set. Then, click Import.
               </Typography>
             </div>

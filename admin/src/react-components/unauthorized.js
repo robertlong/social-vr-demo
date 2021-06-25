@@ -22,7 +22,7 @@ export const UnauthorizedPage = () => (
           alignItems: "center"
         }}
       >
-        <Typography variant="title">Sorry! Your account is not an admin.</Typography>
+        <Typography variant="h6">Sorry! Your account is not an admin.</Typography>
         <Button variant="contained" style={{ marginTop: "40px" }} color="secondary" href="/">
           Return Home
         </Button>

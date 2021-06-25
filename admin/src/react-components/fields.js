@@ -49,7 +49,7 @@ export const OwnedFileImage = withStyles(styles)(({ basePath, record, source, as
       basePath={basePath}
       source={source}
       reference="owned_files"
-      linkType={false}
+      link={false}
       record={record}
       defaultValue={defaultImage && <img src={defaultImage} className={classes[`ownedFileImageAspect_${aspect}`]} />}
     >
@@ -86,12 +86,7 @@ export function OwnedFileDownloadField({ getFileName, ...props }) {
   const fileName = getFileName && getFileName(props);
 
   return (
-    <ConditionalReferenceField
-      reference="owned_files"
-      linkType={false}
-      defaultValue={<a href="#">Download</a>}
-      {...props}
-    >
+    <ConditionalReferenceField reference="owned_files" link={false} defaultValue={<a href="#">Download</a>} {...props}>
       <OwnedFileDownloadFieldInternal source="owned_file_uuid" fileName={fileName} />
     </ConditionalReferenceField>
   );
@@ -130,7 +125,7 @@ export const OwnedFileSizeField = withStyles(styles)(({ label, basePath, record,
       basePath={basePath}
       source={source}
       reference="owned_files"
-      linkType={false}
+      link={false}
       record={record}
       defaultValue={<span>N/A</span>}
     >

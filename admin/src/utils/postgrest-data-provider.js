@@ -1,5 +1,4 @@
-import { queryParameters } from "ra-core/lib/util/fetch";
-import HttpError from "ra-core/lib/util/HttpError";
+import HttpError from "ra-core/lib/dataProvider/HttpError";
 import { GET_LIST, GET_ONE, GET_MANY, GET_MANY_REFERENCE, CREATE, UPDATE, DELETE, DELETE_MANY } from "react-admin";
 import { AUTH_LOGIN, AUTH_LOGOUT, AUTH_ERROR } from "react-admin";
 import json2ParseBigint from "./json_parse_bigint";
@@ -8,6 +7,12 @@ import json2ParseBigint from "./json_parse_bigint";
 // The current auth token, if set, is used when we're talking to reticulum proxying PostgREST.
 let currentPermsToken = null;
 let currentAuthToken = null;
+
+function queryParameters(data) {
+  const ret = [];
+  for (const d in data) ret.push(encodeURIComponent(d) + "=" + encodeURIComponent(data[d]));
+  return ret.join("&");
+}
 
 // Custom fetchJson routing to ensure bigint precision
 const fetchJson = (url, options) => {

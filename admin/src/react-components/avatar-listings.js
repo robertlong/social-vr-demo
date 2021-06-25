@@ -59,7 +59,7 @@ export const AvatarListingList = props => (
       <TextField source="name" />
       <TextField source="order" />
       <AvatarLink source="avatar_listing_sid" />
-      <ConditionalReferenceField reference="avatar_listings" source="parent_avatar_listing_id">
+      <ConditionalReferenceField link="" reference="avatar_listings" source="parent_avatar_listing_id">
         <TextField source="name" />
       </ConditionalReferenceField>
       <OwnedFileImage source="base_map_owned_file_id" aspect="square" />

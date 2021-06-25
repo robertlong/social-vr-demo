@@ -34,7 +34,7 @@ class ServerAccessComponent extends Component {
           <Typography variant="body2" gutterBottom>
             Hubs Cloud sets up your servers with SSH access and Two-Factor Authentication.
           </Typography>
-          <Typography variant="subheading" className={this.props.classes.section} gutterBottom>
+          <Typography variant="h6" className={this.props.classes.section} gutterBottom>
             Connecting to Servers
           </Typography>
           <Typography variant="body1" gutterBottom>
@@ -59,7 +59,7 @@ class ServerAccessComponent extends Component {
           </Typography>
           {this.state.qrCodeData && (
             <div>
-              <Typography variant="subheading" className={this.props.classes.section} gutterBottom>
+              <Typography variant="h6" className={this.props.classes.section} gutterBottom>
                 Two-Factor Verification
               </Typography>
               <Typography variant="body1" gutterBottom>
@@ -85,7 +85,7 @@ class ServerAccessComponent extends Component {
               )}
             </div>
           )}
-          <Typography variant="subheading" className={this.props.classes.section} gutterBottom>
+          <Typography variant="h6" className={this.props.classes.section} gutterBottom>
             More Information
           </Typography>
           <Typography variant="body1" gutterBottom>

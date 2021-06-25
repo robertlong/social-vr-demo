@@ -111,7 +111,7 @@ class AdminUI extends Component {
           <>
             <Admin
               dashboard={SystemEditor}
-              appLayout={this.props.layout}
+              layout={this.props.layout}
               customRoutes={this.props.customRoutes}
               dataProvider={this.props.dataProvider}
               authProvider={this.props.authProvider}
@@ -269,7 +269,12 @@ document.addEventListener("DOMContentLoaded", async () => {
   }
 
   const layout = props => (
-    <Layout {...props} appBar={HiddenAppBar} menu={props => <AdminMenu {...props} services={schemaCategories} />} />
+    <Layout
+      {...props}
+      className="no-margin"
+      appBar={HiddenAppBar}
+      menu={props => <AdminMenu {...props} services={schemaCategories} />}
+    />
   );
 
   const redirectToLogin = () => (document.location = "/?sign_in&sign_in_destination=admin");

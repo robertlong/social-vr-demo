@@ -85,7 +85,7 @@ class SystemEditorComponent extends Component {
         <Card className={this.props.classes.container}>
           <Title title="Hubs Cloud" />
           <CardContent className={this.props.classes.info}>
-            <Typography variant="title" gutterBottom>
+            <Typography variant="h6" gutterBottom>
               🐣 Hubs Cloud is live
             </Typography>
             <Typography variant="body1" gutterBottom>
@@ -244,7 +244,7 @@ class SystemEditorComponent extends Component {
           </CardContent>
         </Card>
         <Card className={this.props.classes.container}>
-          <Typography variant="title" gutterBottom>
+          <Typography variant="h6" gutterBottom>
             In the Admin Panel, you can:
           </Typography>
           <List>

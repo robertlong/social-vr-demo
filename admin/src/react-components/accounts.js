@@ -30,9 +30,9 @@ import {
 } from "react-admin";
 
 const styles = {
-  hide: { display: "none" },
-  noBorder: { border: "0px" },
-  searchCard: { marginBottom: "5px" }
+  searchCard: { marginBottom: "5px" },
+  paddingRight: { paddingRight: "20px" },
+  accountWrapper: { display: "flex", justifyContent: "space-between", flexWrap: "wrap" }
 };
 
 const AccountFilter = props => (
@@ -195,7 +195,7 @@ export const AccountList = withStyles(styles)(
                   />
                   <Button onClick={this.onCreateAccount.bind(this)}>Create</Button>
                   {this.state.creating && <CircularProgress />}
-                  <Snackbar open={this.state.createStatus} autoHideDuration={5000}>
+                  <Snackbar open={!!this.state.createStatus} autoHideDuration={5000}>
                     <SnackbarContent message={this.state.createStatus}></SnackbarContent>
                   </Snackbar>
                 </form>
@@ -228,7 +228,7 @@ export const AccountList = withStyles(styles)(
                   />
                   <Button onClick={this.onAccountSearch.bind(this)}>Find</Button>
                   {this.state.searching && <CircularProgress />}
-                  <Snackbar open={this.state.searchStatus} autoHideDuration={5000}>
+                  <Snackbar open={!!this.state.searchStatus} autoHideDuration={5000}>
                     <SnackbarContent message={this.state.searchStatus}></SnackbarContent>
                   </Snackbar>
                 </form>
@@ -239,13 +239,9 @@ export const AccountList = withStyles(styles)(
                 <TextField source="id" />
                 <DateField source="inserted_at" />
                 <DateField source="updated_at" />
-                <ReferenceManyField label="Identity" target="_account_id" reference="identities">
-                  <Datagrid classes={{ rowCell: classes.noBorder, thead: classes.hide }}>
-                    <TextField source="name" />
-                    <IdentityEditLink />
-                  </Datagrid>
+                <ReferenceManyField label="Identity" source="_text_id" target="_account_id" reference="identities">
+                  <IdentityInline />
                 </ReferenceManyField>
-
                 <IdentityCreateLink />
                 <BooleanField source="is_admin" />
                 <TextField source="state" />
@@ -259,11 +255,9 @@ export const AccountList = withStyles(styles)(
   )
 );
 
-export const AccountEdit = withStyles(styles)(props => {
-  const { classes, ...other } = props;
-
+export const AccountEdit = props => {
   return (
-    <Edit {...other}>
+    <Edit {...props}>
       <SimpleForm toolbar={<ToolbarWithoutDelete />}>
         <TextField label="Account ID" source="id" />
         <BooleanInput source="is_admin" />
@@ -272,13 +266,32 @@ export const AccountEdit = withStyles(styles)(props => {
           choices={[{ id: "enabled", name: "enabled" }, { id: "disabled", name: "disabled" }]}
         />
 
-        <ReferenceManyField label="Identity" target="_account_id" reference="identities">
-          <Datagrid classes={{ rowCell: classes.noBorder, thead: classes.hide }}>
-            <TextField source="name" />
-            <IdentityEditLink />
-          </Datagrid>
+        <ReferenceManyField label="Identity" source="_text_id" target="_account_id" reference="identities">
+          <IdentityInline hasPadding />
         </ReferenceManyField>
       </SimpleForm>
     </Edit>
+  );
+};
+
+const IdentityInline = withStyles(styles)(props => {
+  return (
+    <div>
+      {props.ids &&
+        props.ids.map(id => {
+          return (
+            <div
+              key={id}
+              className={props.classes.accountWrapper}
+              style={{ display: "flex", justifyContent: "space-between", flexWrap: "wrap" }}
+            >
+              <span className={props.hasPadding ? props.classes.paddingRight : ""}>
+                {props.data[id].name ? props.data[id].name : ""}
+              </span>
+              <IdentityEditLink record={{ id }} />
+            </div>
+          );
+        })}
+    </div>
   );
 });
