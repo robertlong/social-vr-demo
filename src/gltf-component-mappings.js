@@ -2,7 +2,13 @@ import { sanitizeUrl } from "@braintree/sanitize-url";
 import "./components/gltf-model-plus";
 import { getSanitizedComponentMapping } from "./utils/component-mappings";
 import { TYPE, SHAPE, FIT } from "three-ammo/constants";
+import { applyPersistentSync } from "./utils/permissions-utils";
+import { getBox } from "./utils/auto-box-collider";
+import { injectCustomShaderChunks } from "./utils/media-utils";
+
 const COLLISION_LAYERS = require("./constants").COLLISION_LAYERS;
+
+import { Object3D } from "three";
 
 function registerRootSceneComponent(componentName) {
   AFRAME.GLTFModelPlus.registerComponent(componentName, componentName, (el, componentName, componentData) => {
@@ -216,17 +222,23 @@ async function mediaInflator(el, componentName, componentData, components) {
 
   if (components.networked) {
     isControlled = componentData.controls || componentName === "link";
-
+    
     const hasVolume = componentName === "video" || componentName === "audio";
-    const templateName =
-      componentName === "model" || isControlled || hasVolume ? "#static-controlled-media" : "#static-media";
-
+    const templateName = components.moveable
+      // Interactable media only has one template and it is currently synonymous with "moveable"
+      ? "#interactable-media"
+      // Static media can be plain or have playback controls
+      : componentName === "model" || isControlled || hasVolume 
+        ? "#static-controlled-media" 
+        : "#static-media";
     el.setAttribute("networked", {
       template: templateName,
       owner: "scene",
       persistent: true,
       networkId: components.networked.id
     });
+    // Apply any pending instructions in case the media has changed
+    applyPersistentSync(components.networked.id);
   }
 
   const mediaOptions = {};
@@ -270,7 +282,7 @@ async function mediaInflator(el, componentName, componentData, components) {
     fileIsOwned: true,
     animate: false,
     mediaOptions,
-    moveTheParentNotTheMesh: true
+    moveTheParentNotTheMesh: false
   });
 }
 
@@ -450,6 +462,7 @@ AFRAME.GLTFModelPlus.registerComponent(
 AFRAME.GLTFModelPlus.registerComponent("video-texture-source", "video-texture-source");
 
 AFRAME.GLTFModelPlus.registerComponent("text", "text");
+
 AFRAME.GLTFModelPlus.registerComponent(
   "audio-target",
   "audio-target",
@@ -470,3 +483,73 @@ AFRAME.GLTFModelPlus.registerComponent(
   }
 );
 AFRAME.GLTFModelPlus.registerComponent("zone-audio-source", "zone-audio-source");
+
+const IDENTITY_MATRIX = new THREE.Matrix4().identity();
+
+AFRAME.GLTFModelPlus.registerComponent("moveable", "moveable", (el, componentName, componentData, components) => {
+  // Moveability of media components is handled by mediaInflator, but parts of a model need to be handled explictly
+  if(!components.model && !components.image && !components.video && !components.audio) {
+    if(components.networked) {
+      el.setAttribute("networked", {
+        // The moveable template is a subset of interactable
+        template: "#moveable-media",
+        owner: "scene",
+        persistent: true,
+        networkId: components.networked.id
+      });
+
+      // Objects are current expected to have all the transforms applied or there can be anomalies in the physics geometry
+      el.object3D.parent.updateWorldMatrix(true, true);
+      if(!IDENTITY_MATRIX.equals(el.object3D.parent.matrixWorld)) {
+        console.warn(`Moveable object '${el.object3D.name}' should have no transforms in the hierarchy`);
+      }
+      
+      // shape-helper currently expects there to be an A-Frame mesh directly descendent from the node that shape-helper attaches to
+      if(el.object3DMap.mesh) {
+        // Move the target such that the center of its bounding box is in the same position as the parent matrix position
+        const target = el.object3D;
+        target.updateMatrices();
+        const box = getBox(el, target);
+        const { min, max } = box;
+        const center = new THREE.Vector3();
+        center.addVectors(min, max).multiplyScalar(0.5);
+        // The shim object sits between the target and it's children such that the target position will be central
+        const shim = new Object3D();
+        shim.name = `shim-${target.name}`;
+        const children = target.children.slice();
+        target.attach(shim);
+        children.forEach(child => shim.attach(child));
+        // Move the target to the center of the object and the shim opposite to keep the overall position the same
+        target.position.add(center);
+        shim.position.sub(center);
+        target.matrixNeedsUpdate = true;
+        shim.matrixNeedsUpdate = true;
+        // Note that the hull building library assumes the object position is at the volumetric center of the shape
+        // and if this is not true it will be generated at an offset to the actual geometry
+        el.setAttribute("shape-helper", { type: SHAPE.HULL, minHalfExtent: 0.04 });
+
+        // Configure hover effect
+        const hoverableVisuals = el.components["hoverable-visuals"];
+        if (hoverableVisuals) {
+          hoverableVisuals.uniforms = injectCustomShaderChunks(el.object3D);
+          const boundingBox = new THREE.Box3();
+          const boundingSphere = new THREE.Sphere();
+          boundingBox.setFromObject(el.object3DMap.mesh);
+          boundingBox.getBoundingSphere(boundingSphere);
+          hoverableVisuals.geometryRadius = boundingSphere.radius / el.object3D.scale.y;
+        }
+  
+      } else {
+        console.warn(`Moveable object '${el.object3D.name}' has no immediate meshes and will not have physics geometry applied`);
+      }
+            
+      // Apply any pending instructions in case the media has changed
+      applyPersistentSync(components.networked.id);
+
+    } else {
+      console.warn(`Moveable components are expected to be networked`);
+    }
+  } else {
+    el.setAttribute("moveable", { });
+  }
+});

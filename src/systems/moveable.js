@@ -1,0 +1,3 @@
+AFRAME.registerComponent('moveable', {
+  schema: {}
+});

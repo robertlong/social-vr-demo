@@ -23,6 +23,8 @@ AFRAME.registerComponent("owned-object-limiter", {
 
   _syncCounterRegistration() {
     if (!this.el.components["networked"]) return;
+    // Ignore 'moveable' (embedded intractive) objects
+    if (this.el.components["moveable"]) return;
 
     const isPinned = this.el.components["pinnable"] && this.el.components["pinnable"].data.pinned;
 

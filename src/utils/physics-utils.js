@@ -79,10 +79,19 @@ export const traverseMeshesAndAddShapes = (function() {
         }
       });
 
+      // Moveable objects should not be used to create the static collision mesh
+      let containsMoveable = false;
+      meshRoot.traverse(o => {
+        if(o.el.attributes["moveable"]) {
+          containsMoveable = true;
+          return;
+        }
+      });
+
       let navMesh = null;
 
-      if (isHighDensity) {
-        console.log("mesh contains high triangle density region");
+      if (isHighDensity || containsMoveable) {
+        console.log("mesh contains high triangle density region or moveable elements");
         navMesh = document.querySelector("[nav-mesh]");
       }
 
@@ -95,7 +104,7 @@ export const traverseMeshesAndAddShapes = (function() {
           includeInvisible: true
         });
         shapes.push({ id: shapePrefix + "floorPlan", entity: navMesh });
-      } else if (!isHighDensity) {
+      } else if (!isHighDensity && !containsMoveable) {
         el.setAttribute(shapePrefix + "environment", {
           type: SHAPE.MESH,
           margin: 0.01,

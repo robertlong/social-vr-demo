@@ -119,7 +119,8 @@ AFRAME.registerComponent("media-loader", {
       } else {
         // Move the mesh such that the center of its bounding box is in the same position as the parent matrix position
         const box = getBox(this.el, mesh);
-        const scaleCoefficient = fitToBox ? getScaleCoefficient(0.5, box) : 1;
+        // Target a bounding box of 1m so models are more consistent with other media types
+        const scaleCoefficient = fitToBox ? getScaleCoefficient(1.0, box) : 1;
         const { min, max } = box;
         center.addVectors(min, max).multiplyScalar(0.5 * scaleCoefficient);
         mesh.scale.multiplyScalar(scaleCoefficient);

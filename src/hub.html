@@ -302,6 +302,23 @@
                 </a-entity>
             </template>
 
+            <template id="moveable-media">
+                <a-entity
+                    class="interactable"
+                    moveable
+                    body-helper="type: dynamic; mass: 1; collisionFilterGroup: 1; collisionFilterMask: 15;"
+                    set-unowned-body-kinematic
+                    is-remote-hover-target
+                    tags="isHandCollisionTarget: true; isHoldable: true; offersHandConstraint: true; offersRemoteConstraint: true; inspectable: true;"
+                    floaty-object="modifyGravityOnRelease: true; autoLockOnLoad: true;"
+                    set-yxz-order
+                    matrix-auto-update
+                    hoverable-visuals
+                    use-audio-system-settings
+                >
+                </a-entity>
+            </template>
+
             <template id="interactable-media">
                 <a-entity
                     class="interactable"
