@@ -283,7 +283,9 @@ module.exports = async (env, argv) => {
       useLocalIp: true,
       allowedHosts: [host, "hubs.local"],
       headers: {
-        "Access-Control-Allow-Origin": "*"
+        "Access-Control-Allow-Origin": "*",
+        "Cross-Origin-Opener-Policy": "same-origin",
+        "Cross-Origin-Embedder-Policy": "require-corp"
       },
       hot: liveReload,
       inline: liveReload,
