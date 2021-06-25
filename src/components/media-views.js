@@ -1256,8 +1256,15 @@ AFRAME.registerComponent("media-pdf", {
         this.el.setAttribute("media-pager", { maxIndex: this.pdf.numPages - 1 });
       }
 
-      const page = await this.pdf.getPage(index + 1);
-      if (src !== this.data.src || index !== this.data.index) return;
+      if (!this.pdf) {
+        // The pdf may not have been loaded yet, this can happen with initial
+        // render followed with a networked update with index > 0
+        // (not the first page of the pdf)
+        return;
+      }
+      // Use here this.data.index and not index to have the networked update.
+      const page = await this.pdf.getPage(this.data.index + 1);
+      if (src !== this.data.src) return;
 
       const viewport = page.getViewport({ scale: 3 });
       const pw = viewport.width;
@@ -1274,7 +1281,7 @@ AFRAME.registerComponent("media-pdf", {
 
       this.renderTask = null;
 
-      if (src !== this.data.src || index !== this.data.index) return;
+      if (src !== this.data.src) return;
     } catch (e) {
       console.error("Error loading PDF", this.data.src, e);
       texture = errorTexture;
