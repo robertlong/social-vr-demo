@@ -597,6 +597,10 @@ AFRAME.registerComponent("gltf-model-plus", {
     this.loadTemplates();
   },
 
+  play() {
+    this.el.components["listed-media"] && this.el.sceneEl.emit("listed_media_changed");
+  },
+
   update() {
     this.applySrc(resolveAsset(this.data.src), this.data.contentType);
   },
