@@ -3,6 +3,8 @@ import PropTypes from "prop-types";
 
 let config = process.env.APP_CONFIG;
 
+// Note: duplicated logic in utils/theme.js
+
 // Storybook includes environment variables as a string
 // https://storybook.js.org/docs/react/configure/environment-variables
 if (!config && process.env.STORYBOOK_APP_CONFIG) {

@@ -137,7 +137,7 @@ function createDefaultAppConfig() {
   if (fs.existsSync(themesPath)) {
     const themesString = fs.readFileSync(themesPath).toString();
     const themes = JSON.parse(themesString);
-    appConfig.themes = themes;
+    appConfig.theme = { themes };
   }
 
   return appConfig;
@@ -163,6 +163,9 @@ async function fetchAppConfigAndEnvironmentVars() {
   }
 
   const appConfig = await appConfigsResponse.json();
+  if (appConfig.theme && appConfig.theme.themes) {
+    appConfig.theme.themes = JSON.parse(appConfig.theme.themes);
+  }
 
   // dev.reticulum.io doesn't run ita
   if (host === "dev.reticulum.io") {
@@ -289,6 +292,7 @@ module.exports = async (env, argv) => {
       inline: liveReload,
       historyApiFallback: {
         rewrites: [
+          { from: /^\/link/, to: "/link.html" },
           { from: /^\/signin/, to: "/signin.html" },
           { from: /^\/discord/, to: "/discord.html" },
           { from: /^\/cloud/, to: "/cloud.html" },
