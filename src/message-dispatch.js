@@ -2,7 +2,7 @@ import "./utils/configs";
 import { getAbsoluteHref } from "./utils/media-url-utils";
 import { isValidSceneUrl } from "./utils/scene-url-utils";
 import { spawnChatMessage } from "./react-components/chat-message";
-import { SOUND_QUACK, SOUND_SPECIAL_QUACK } from "./systems/sound-effects-system";
+import { SOUND_CHAT_MESSAGE, SOUND_QUACK, SOUND_SPECIAL_QUACK } from "./systems/sound-effects-system";
 import ducky from "./assets/models/DuckyMesh.glb";
 import { EventTarget } from "event-target-shim";
 import { ExitReason } from "./react-components/room/ExitedRoomScreen";
@@ -11,14 +11,35 @@ import { LogMessageType } from "./react-components/room/ChatSidebar";
 let uiRoot;
 // Handles user-entered messages
 export default class MessageDispatch extends EventTarget {
-  constructor(scene, entryManager, hubChannel, addToPresenceLog, remountUI, mediaSearchStore) {
+  constructor(scene, entryManager, hubChannel, remountUI, mediaSearchStore) {
     super();
     this.scene = scene;
     this.entryManager = entryManager;
     this.hubChannel = hubChannel;
-    this.addToPresenceLog = addToPresenceLog;
     this.remountUI = remountUI;
     this.mediaSearchStore = mediaSearchStore;
+    this.presenceLogEntries = [];
+  }
+
+  addToPresenceLog(entry) {
+    entry.key = Date.now().toString();
+
+    this.presenceLogEntries.push(entry);
+    this.remountUI({ presenceLogEntries: this.presenceLogEntries });
+    if (entry.type === "chat" && this.scene.is("loaded")) {
+      this.scene.systems["hubs-systems"].soundEffectsSystem.playSoundOneShot(SOUND_CHAT_MESSAGE);
+    }
+
+    // Fade out and then remove
+    setTimeout(() => {
+      entry.expired = true;
+      this.remountUI({ presenceLogEntries: this.presenceLogEntries });
+
+      setTimeout(() => {
+        this.presenceLogEntries.splice(this.presenceLogEntries.indexOf(entry), 1);
+        this.remountUI({ presenceLogEntries: this.presenceLogEntries });
+      }, 5000);
+    }, 20000);
   }
 
   receive(message) {
