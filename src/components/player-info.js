@@ -1,4 +1,3 @@
-import { injectCustomShaderChunks } from "../utils/media-utils";
 import { AVATAR_TYPES } from "../utils/avatar-utils";
 import { registerComponentInstance, deregisterComponentInstance } from "../utils/component-utils";
 import defaultAvatar from "../assets/models/DefaultAvatar.glb";
@@ -158,20 +157,13 @@ AFRAME.registerComponent("player-info", {
       modBadgeEl.object3D.visible = !this.isRecording && this.isOwner && !infoShouldBeHidden;
     }
   },
-  applyProperties(e) {
+  applyProperties() {
     this.applyDisplayName();
 
     const modelEl = this.el.querySelector(".model");
     if (this.data.avatarSrc && modelEl) {
       modelEl.components["gltf-model-plus"].jsonPreprocessor = ensureAvatarNodes;
       modelEl.setAttribute("gltf-model-plus", "src", this.data.avatarSrc);
-    }
-
-    if (!e || e.target === modelEl) {
-      const uniforms = injectCustomShaderChunks(this.el.object3D);
-      this.el.querySelectorAll("[hover-visuals]").forEach(el => {
-        el.components["hover-visuals"].uniforms = uniforms;
-      });
     }
 
     const videoTextureTargets = modelEl.querySelectorAll("[video-texture-target]");

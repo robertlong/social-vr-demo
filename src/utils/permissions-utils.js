@@ -11,7 +11,8 @@ export function showHoverEffect(el) {
       ? window.APP.hubChannel.can("spawn_emoji")
       : window.APP.hubChannel.can("spawn_and_move_media")) &&
     (!isPinned || window.APP.hubChannel.can("pin_objects"));
-  return (isSpawner || !isPinned || isFrozen) && canMove;
+  const isInteractable = el.classList.contains("interactable");
+  return isInteractable || ((isSpawner || !isPinned || isFrozen) && canMove);
 }
 
 export function canMove(entity) {
