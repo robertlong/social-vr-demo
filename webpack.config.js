@@ -177,15 +177,14 @@ async function fetchAppConfigAndEnvironmentVars() {
     throw new Error(`Error fetching Hubs Cloud config "${hubsConfigsResponse.statusText}"`);
   }
 
-  const { shortlink_domain, thumbnail_server } = hubsConfigs.general;
+  const { shortlink_domain, thumbnail_server, non_cors_proxy_domains } = hubsConfigs.general;
 
-  const localIp = process.env.HOST_IP || (await internalIp.v4()) || "localhost";
-
+  const localIp = "localhost";
   process.env.RETICULUM_SERVER = host;
   process.env.SHORTLINK_DOMAIN = shortlink_domain;
   process.env.CORS_PROXY_SERVER = `${localIp}:8080/cors-proxy`;
   process.env.THUMBNAIL_SERVER = thumbnail_server;
-  process.env.NON_CORS_PROXY_DOMAINS = `${localIp},hubs.local,localhost`;
+  process.env.NON_CORS_PROXY_DOMAINS = `${non_cors_proxy_domains},${localIp},hubs.local,localhost`;
 
   return appConfig;
 }
