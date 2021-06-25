@@ -4,7 +4,7 @@
   "license": "MPL-2.0",
   "devDependencies": {
     "docopt": "^0.6.2",
-    "puppeteer": "7.0.1",
+    "puppeteer": "8.0.0",
     "query-string": "^5.0.1"
   }
 }
