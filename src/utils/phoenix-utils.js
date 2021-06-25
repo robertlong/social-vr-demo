@@ -336,3 +336,37 @@ export function hasEmbedPresences(presences) {
 
   return false;
 }
+
+export function denoisePresence({ onJoin, onLeave, onChange }) {
+  return {
+    rawOnJoin: (key, beforeJoin, afterJoin) => {
+      if (beforeJoin === undefined) {
+        onJoin(key, afterJoin.metas[0]);
+      }
+    },
+    rawOnLeave: (key, remaining, removed) => {
+      if (remaining.metas.length === 0) {
+        onLeave(key, removed.metas[0]);
+      } else {
+        onChange(key, removed.metas[removed.metas.length - 1], remaining.metas[remaining.metas.length - 1]);
+      }
+    }
+  };
+}
+
+export function presenceEventsForHub(events) {
+  const onJoin = (key, meta) => {
+    events.trigger(`hub:join`, { key, meta });
+  };
+  const onLeave = (key, meta) => {
+    events.trigger(`hub:leave`, { key, meta });
+  };
+  const onChange = (key, previous, current) => {
+    events.trigger(`hub:change`, { key, previous, current });
+  };
+  return {
+    onJoin,
+    onLeave,
+    onChange
+  };
+}

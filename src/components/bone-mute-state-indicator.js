@@ -3,6 +3,7 @@
  * @namespace avatar
  * @component bone-mute-state-indicator
  */
+// TODO: Remove this
 AFRAME.registerComponent("bone-mute-state-indicator", {
   schema: {
     unmutedBoneName: { default: "Watch_Joint_MicON" },
@@ -20,26 +21,23 @@ AFRAME.registerComponent("bone-mute-state-indicator", {
 
       this.updateMuteState();
     });
+
+    this.onMicStateChanged = () => {
+      this.updateMuteState();
+    };
   },
 
   play() {
-    this.el.sceneEl.addEventListener("stateadded", this.onStateToggled);
-    this.el.sceneEl.addEventListener("stateremoved", this.onStateToggled);
+    APP.dialog.on("mic-state-changed", this.onMicStateChanged);
   },
 
   pause() {
-    this.el.sceneEl.removeEventListener("stateadded", this.onStateToggled);
-    this.el.sceneEl.removeEventListener("stateremoved", this.onStateToggled);
-  },
-
-  onStateToggled(e) {
-    if (!e.detail.state === "muted") return;
-    this.updateMuteState();
+    APP.dialog.off("mic-state-changed", this.onMicStateChanged);
   },
 
   updateMuteState() {
     if (!this.modelLoaded) return;
-    const muted = this.el.sceneEl.is("muted");
+    const muted = !APP.dialog.isMicEnabled;
     this.mutedBone.position.y = muted ? this.data.onPos : this.data.offPos;
     this.unmutedBone.position.y = !muted ? this.data.onPos : this.data.offPos;
     this.mutedBone.matrixNeedsUpdate = true;

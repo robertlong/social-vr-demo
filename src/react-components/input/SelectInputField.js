@@ -110,7 +110,7 @@ SelectInputField.propTypes = {
       PropTypes.string,
       PropTypes.number,
       PropTypes.shape({
-        id: PropTypes.string.isRequired,
+        // id: PropTypes.string.isRequired,
         label: PropTypes.string,
         value: PropTypes.any.isRequired
       })

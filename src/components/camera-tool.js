@@ -389,7 +389,7 @@ AFRAME.registerComponent("camera-tool", {
     };
 
     if (this.data.captureAudio) {
-      const selfAudio = await NAF.connection.adapter.getMediaStream(NAF.clientId, "audio");
+      const selfAudio = await APP.dialog.getMediaStream(NAF.clientId, "audio");
 
       // NOTE: if we don't have a self audio track, we can end up generating an empty video (browser bug?)
       // if no audio comes through on the listener source. (Eg the room is otherwise silent.)

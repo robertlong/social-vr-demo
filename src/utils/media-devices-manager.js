@@ -129,8 +129,7 @@ export default class MediaDevicesManager {
       console.log("No available audio tracks");
     }
 
-    await NAF.connection.adapter.setLocalMediaStream(this._mediaStream);
-    NAF.connection.adapter.enableMicrophone(!this._scene.is("muted"));
+    await APP.dialog.setLocalMediaStream(this._mediaStream);
 
     return result;
   }
@@ -209,8 +208,8 @@ export default class MediaDevicesManager {
     this.audioTrack?.stop();
     this.audioTrack = null;
 
-    await NAF.connection.adapter.setLocalMediaStream(this._mediaStream);
-    NAF.connection.adapter.enableMicrophone(false);
+    await APP.dialog.setLocalMediaStream(this._mediaStream);
+    APP.dialog.enableMicrophone(false);
   }
 
   async startVideoShare(constraints, isDisplayMedia, target, success, error) {
@@ -241,7 +240,7 @@ export default class MediaDevicesManager {
           this.audioSystem.addStreamToOutboundAudio("screenshare", newStream);
         }
 
-        await NAF.connection.adapter.setLocalMediaStream(this._mediaStream);
+        await APP.dialog.setLocalMediaStream(this._mediaStream);
       }
     } catch (e) {
       error(e);
@@ -262,7 +261,7 @@ export default class MediaDevicesManager {
 
     this.audioSystem.removeStreamFromOutboundAudio("screenshare");
 
-    await NAF.connection.adapter.setLocalMediaStream(this._mediaStream);
+    await APP.dialog.setLocalMediaStream(this._mediaStream);
   }
 
   async shouldShowHmdMicWarning() {

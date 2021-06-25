@@ -152,7 +152,7 @@ AFRAME.registerComponent("video-texture-target", {
 
         const streamClientId = src.substring(7).split("/")[1]; // /clients/<client id>/video is only URL for now
 
-        NAF.connection.adapter.getMediaStream(streamClientId, "video").then(stream => {
+        APP.dialog.getMediaStream(streamClientId, "video").then(stream => {
           if (src !== this.data.src) {
             // Prevent creating and loading video texture if the src changed while we were fetching the video stream.
             return;

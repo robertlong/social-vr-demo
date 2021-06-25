@@ -232,9 +232,8 @@ export function authorizeOrSanitizeMessage(message) {
   }
 }
 
-const PHOENIX_RELIABLE_NAF = "phx-reliable";
 export function applyPersistentSync(networkId) {
   if (!persistentSyncs[networkId]) return;
-  NAF.connection.adapter.onData(authorizeOrSanitizeMessage(persistentSyncs[networkId]), PHOENIX_RELIABLE_NAF);
+  NAF.connection.adapter.handleIncomingNAF(persistentSyncs[networkId]);
   delete persistentSyncs[networkId];
 }

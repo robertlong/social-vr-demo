@@ -262,7 +262,7 @@ export default class RtcDebugPanel extends Component {
 
   getDeviceData() {
     let result = {};
-    const device = NAF.connection.adapter._mediasoupDevice;
+    const device = APP.dialog._mediasoupDevice;
     if (device) {
       result["loaded"] = !device._closed ? true : false;
       result["codecs"] = device._recvRtpCapabilities?.codecs.map(
@@ -270,7 +270,7 @@ export default class RtcDebugPanel extends Component {
       );
       result = {
         ...result,
-        ...NAF.connection.adapter.downlinkBwe
+        ...APP.dialog.downlinkBwe
       };
     }
     return result;
@@ -314,9 +314,9 @@ export default class RtcDebugPanel extends Component {
     const result = {};
     let transport;
     if (type === TransportType.SEND) {
-      transport = NAF.connection.adapter._sendTransport;
+      transport = APP.dialog._sendTransport;
     } else if (type === TransportType.RECEIVE) {
-      transport = NAF.connection.adapter._recvTransport;
+      transport = APP.dialog._recvTransport;
     }
     const opened = (transport && !transport._closed && true) || false;
     result["opened"] = opened;
@@ -364,7 +364,7 @@ export default class RtcDebugPanel extends Component {
       result["name"] = profile ? profile.displayName : "N/A";
       result["peerId"] = peer._appData.peerId;
 
-      const stats = NAF.connection.adapter.consumerStats[peer._id];
+      const stats = APP.dialog.consumerStats[peer._id];
       if (result["kind"] === "video" && stats) {
         result["spatialLayer"] = stats["spatialLayer"];
         result["temporalLayer"] = stats["temporalLayer"];
@@ -385,11 +385,11 @@ export default class RtcDebugPanel extends Component {
   }
 
   getSignalingData() {
-    return { connected: !NAF.connection.adapter._closed };
+    return { connected: !APP.dialog._closed };
   }
 
   async getServerData() {
-    return await NAF.connection.adapter.getServerStats();
+    return await APP.dialog.getServerStats();
   }
 
   async getRtpStatsData(peer, type) {
@@ -486,9 +486,9 @@ export default class RtcDebugPanel extends Component {
 
             // Populate graph, speed and stats data
             const statsData = {};
-            if (NAF.connection.adapter._micProducer) {
-              const id = NAF.connection.adapter._micProducer.id;
-              const peer = NAF.connection.adapter._micProducer;
+            if (APP.dialog._micProducer) {
+              const id = APP.dialog._micProducer.id;
+              const peer = APP.dialog._micProducer;
               const speedData = this.getPeerSpeed(id, "bytesSent");
               const rtpStatsData = await this.getRtpStatsData(peer, StatsType.OUTBOUND_RTP);
               const { lastStats, graphData } = this.getGraphData(id, rtpStatsData);
@@ -498,9 +498,9 @@ export default class RtcDebugPanel extends Component {
               statsData[id]["last"] = lastStats;
               statsData[id]["rtpStats"] = rtpStatsData;
             }
-            if (NAF.connection.adapter._cameraProducer) {
-              const id = NAF.connection.adapter._cameraProducer.id;
-              const peer = NAF.connection.adapter._cameraProducer;
+            if (APP.dialog._cameraProducer) {
+              const id = APP.dialog._cameraProducer.id;
+              const peer = APP.dialog._cameraProducer;
               const speedData = this.getPeerSpeed(id, "bytesSent");
               const rtpStatsData = await this.getRtpStatsData(peer, StatsType.OUTBOUND_RTP);
               const { lastStats, graphData } = this.getGraphData(id, rtpStatsData);
@@ -510,9 +510,9 @@ export default class RtcDebugPanel extends Component {
               statsData[id]["last"] = lastStats;
               statsData[id]["rtpStats"] = rtpStatsData;
             }
-            if (NAF.connection.adapter._shareProducer) {
-              const id = NAF.connection.adapter._shareProducer.id;
-              const peer = NAF.connection.adapter._shareProducer;
+            if (APP.dialog._shareProducer) {
+              const id = APP.dialog._shareProducer.id;
+              const peer = APP.dialog._shareProducer;
               const speedData = this.getPeerSpeed(id, "bytesSent");
               const rtpStatsData = await this.getRtpStatsData(peer, StatsType.OUTBOUND_RTP);
               const { lastStats, graphData } = this.getGraphData(id, rtpStatsData);
@@ -522,7 +522,7 @@ export default class RtcDebugPanel extends Component {
               statsData[id]["last"] = lastStats;
               statsData[id]["rtpStats"] = rtpStatsData;
             }
-            for (const consumer of NAF.connection.adapter._consumers) {
+            for (const consumer of APP.dialog._consumers) {
               const id = consumer[0];
               const peer = consumer[1];
               const speedData = this.getPeerSpeed(id, "bytesReceived");
@@ -555,19 +555,19 @@ export default class RtcDebugPanel extends Component {
   }
 
   restartSendICE = () => {
-    NAF.connection.adapter.restartSendICE();
+    APP.dialog.restartSendICE();
   };
 
   restartRecvICE = () => {
-    NAF.connection.adapter.restartRecvICE();
+    APP.dialog.restartRecvICE();
   };
 
   connectSignaling = () => {
-    NAF.connection.adapter.connect();
+    APP.dialog.connect();
   };
 
   disconnectSignaling = () => {
-    NAF.connection.adapter.disconnect();
+    APP.dialog.disconnect();
   };
 
   colorForLevel = level => {

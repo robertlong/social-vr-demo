@@ -26,6 +26,7 @@ function loadRoomObjects(hubId) {
 }
 
 export async function changeHub(hubId, addToHistory = true) {
+  // Suppress on-screen join and leave messages until we receive a sync.
   APP.suppressPresenceMessages = true;
   const scene = AFRAME.scenes[0];
 
@@ -34,7 +35,6 @@ export async function changeHub(hubId, addToHistory = true) {
     data = await APP.hubChannel.migrateToHub(hubId);
   } catch (e) {
     console.warn(`Failed to join hub ${hubId}: ${e.reason}|${e.message}`);
-    APP.suppressPresenceMessages = false;
     APP.messageDispatch.log("joinFailed", { message: e.message });
     return;
   }
@@ -59,16 +59,12 @@ export async function changeHub(hubId, addToHistory = true) {
   await APP.mediaDevicesManager.stopMicShare();
   NAF.entities.removeRemoteEntities();
   await NAF.connection.adapter.disconnect();
+  await APP.dialog.disconnect();
   unloadRoomObjects();
   NAF.connection.connectedClients = {};
   NAF.connection.activeDataChannels = {};
 
   NAF.room = hub.hub_id;
-  NAF.connection.adapter.setServerUrl(`wss://${hub.host}:${hub.port}`);
-  NAF.connection.adapter.setRoom(hub.hub_id);
-  // TODO does this need to look at oauth token? It isnt in prod
-  NAF.connection.adapter.setJoinToken(data.perms_token);
-  NAF.connection.adapter.setServerParams(await APP.hubChannel.getHost());
 
   if (
     document.querySelector("#environment-scene").childNodes[0].components["gltf-model-plus"].data.src !==
@@ -82,18 +78,26 @@ export async function changeHub(hubId, addToHistory = true) {
 
   APP.retChannel.push("change_hub", { hub_id: hub.hub_id });
 
-  NAF.connection.adapter.connect().then(async function() {
-    APP.mediaDevicesManager.startMicShare();
-    loadRoomObjects(hubId);
+  await Promise.all([
+    APP.dialog.connect({
+      serverUrl: `wss://${hub.host}:${hub.port}`,
+      hubId: hub.hub_id,
+      joinToken: data.perms_token,
+      serverParams: { host: hub.host, port: hub.port, turn: hub.turn },
+      scene
+    }),
+    NAF.connection.adapter.connect()
+  ]);
 
-    APP.hubChannel.sendEnteredEvent();
+  APP.mediaDevicesManager.startMicShare();
+  loadRoomObjects(hubId);
 
-    APP.messageDispatch.receive({
-      type: "hub_changed",
-      hubName: hub.name,
-      showLineBreak: true
-    });
-    APP.suppressPresenceMessages = false;
+  APP.hubChannel.sendEnteredEvent();
+
+  APP.messageDispatch.receive({
+    type: "hub_changed",
+    hubName: hub.name,
+    showLineBreak: true
   });
 }
 window.changeHub = changeHub;

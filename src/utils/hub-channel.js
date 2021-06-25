@@ -136,11 +136,6 @@ export default class HubChannel extends EventTarget {
     return data;
   }
 
-  setPhoenixChannel = channel => {
-    this.channel = channel;
-    this.presence = new Presence(channel);
-  };
-
   setPermissionsFromToken = token => {
     // Note: token is not verified.
     this._permissions = jwtDecode(token);
@@ -179,13 +174,13 @@ export default class HubChannel extends EventTarget {
       }
     }
 
-    // This is fairly hacky, but gets the # of initial occupants
-    let initialOccupantCount = 0;
-    if (NAF.connection.adapter) {
-      // When I enter room as avatar, count number of people inside the room as avatars and lobby
-      // I enter room alone, no one in lobby, this is 0
-      initialOccupantCount = Object.keys(NAF.connection.adapter.occupants).length;
-    }
+    const initialOccupantCount = this.presence
+      .list((key, presence) => {
+        return { key, entryState: presence.metas[presence.metas.length - 1].presence };
+      })
+      .filter(({ key, entryState }) => {
+        return key !== NAF.clientId && entryState === "entered";
+      }).length;
 
     const entryTimingFlags = this.getEntryTimingFlags();
 
@@ -412,6 +407,7 @@ export default class HubChannel extends EventTarget {
 
   hide = sessionId => {
     NAF.connection.adapter.block(sessionId);
+    APP.dialog.block(sessionId);
     this.channel.push("block", { session_id: sessionId });
     this._blockedSessionIds.add(sessionId);
   };
@@ -419,6 +415,7 @@ export default class HubChannel extends EventTarget {
   unhide = sessionId => {
     if (!this._blockedSessionIds.has(sessionId)) return;
     NAF.connection.adapter.unblock(sessionId);
+    APP.dialog.unblock(sessionId);
     NAF.connection.entities.completeSync(sessionId);
     this.channel.push("unblock", { session_id: sessionId });
     this._blockedSessionIds.delete(sessionId);
@@ -428,7 +425,7 @@ export default class HubChannel extends EventTarget {
 
   kick = async sessionId => {
     const permsToken = await this.fetchPermissions();
-    NAF.connection.adapter.kick(sessionId, permsToken);
+    APP.dialog.kick(sessionId, permsToken);
     this.channel.push("kick", { session_id: sessionId });
   };
 
