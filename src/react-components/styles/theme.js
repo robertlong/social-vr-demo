@@ -33,9 +33,15 @@ function useDarkMode() {
 
     setDarkMode(darkmodeQuery.matches);
 
-    darkmodeQuery.addEventListener("change", event => {
-      setDarkMode(event.matches);
-    });
+    if (darkmodeQuery.addEventListener) {
+      darkmodeQuery.addEventListener("change", event => {
+        setDarkMode(event.matches);
+      });
+    } else {
+      darkmodeQuery.addListener(event => {
+        setDarkMode(event.matches);
+      });
+    }
   }, []);
 
   return darkMode;
