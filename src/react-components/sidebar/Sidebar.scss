@@ -43,5 +43,8 @@
   display: flex;
   flex: 1;
   flex-direction: column;
+}
+
+:local(.overflow-y) {
   overflow-y: auto;
 }

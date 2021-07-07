@@ -1,8 +1,9 @@
 @use "../styles/theme.scss";
 
 :local(.chat-input-container) {
-  padding: 0 16px 8px 16px;
+  padding: 8px 16px 8px 16px;
   background-color: theme.$input-bg-color;
+  flex-basis: max-content;
 }
 
 :local(.message-list) {
@@ -23,7 +24,7 @@
   padding-top: 16px;
 
   &:last-child {
-    padding-bottom: 16px;
+    padding-bottom: 8px;
   }
 }
 
@@ -121,4 +122,20 @@
       fill: theme.$input-icon-color;
     }
   }
+}
+
+:local(.chat-input-warning) {
+  padding-top: theme.$spacing-2xs;
+}
+
+:local(.warning-border) {
+  border: 2px solid theme.$red !important;
+}
+
+:local(.warning-text-color) {
+  color: theme.$red;
+}
+
+:local(.chat-input-text-area-styles) {
+  max-height: 50vh;
 }

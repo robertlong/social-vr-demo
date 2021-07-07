@@ -3,7 +3,15 @@ import PropTypes from "prop-types";
 import classNames from "classnames";
 import styles from "./Sidebar.scss";
 
-export function Sidebar({ title, beforeTitle, afterTitle, children, contentClassName, className }) {
+export function Sidebar({
+  title,
+  beforeTitle,
+  afterTitle,
+  children,
+  contentClassName,
+  className,
+  disableOverflowScroll
+}) {
   return (
     <div className={classNames(styles.sidebar, className)}>
       {(title || beforeTitle || afterTitle) && (
@@ -13,7 +21,9 @@ export function Sidebar({ title, beforeTitle, afterTitle, children, contentClass
           <div className={styles.afterTitle}>{afterTitle}</div>
         </div>
       )}
-      <div className={classNames(styles.content, contentClassName)}>{children}</div>
+      <div className={classNames(styles.content, disableOverflowScroll ? "" : styles.overflowY, contentClassName)}>
+        {children}
+      </div>
     </div>
   );
 }
@@ -25,5 +35,9 @@ Sidebar.propTypes = {
   children: PropTypes.node,
   className: PropTypes.string,
   contentClassName: PropTypes.string,
-  disableFullscreen: PropTypes.bool
+  disableOverflowScroll: PropTypes.bool
+};
+
+Sidebar.defaultProps = {
+  disableOverflowScroll: false
 };
