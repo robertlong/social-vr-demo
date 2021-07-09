@@ -19,6 +19,7 @@ export function ImageGridPopover({ fullscreen, items, closePopover }) {
 
               closePopover();
             }}
+            {...item.crossOrigin && { crossOrigin: item.crossOrigin }}
           />
         );
       })}
@@ -33,6 +34,7 @@ ImageGridPopover.propTypes = {
       id: PropTypes.string.isRequired,
       src: PropTypes.string.isRequired,
       label: PropTypes.string.isRequired,
+      crossOrigin: PropTypes.string,
       onSelect: PropTypes.func
     })
   ).isRequired,

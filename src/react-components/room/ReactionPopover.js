@@ -15,6 +15,9 @@ export function ReactionPopoverButton({ items }) {
   const intl = useIntl();
   const title = intl.formatMessage(reactionPopoverTitle);
 
+  // crossOrigin: "Anonymous" is a workaround for CORS error on Chrome. See #4400
+  items.forEach(item => (item.crossOrigin = "Anonymous"));
+
   return (
     <Popover
       title={title}
