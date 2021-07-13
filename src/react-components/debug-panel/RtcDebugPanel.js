@@ -231,7 +231,7 @@ export default class RtcDebugPanel extends Component {
 
     this.state = {
       log: [],
-      collapsed: { Local: false, Log: isMobile, Remote: true, Audio: false }
+      collapsed: { Local: false, Log: isMobile, Remote: true, Audio: true }
     };
   }
 

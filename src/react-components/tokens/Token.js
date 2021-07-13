@@ -6,7 +6,7 @@ import { Row } from "../layout/Row";
 import styles from "./Token.scss";
 
 export function Token({ tokenInfo, onRevokeToken }) {
-  const { account_id, id, inserted_at, is_revoked, scopes, subject_type, token, updated_at } = tokenInfo;
+  const { account_id, inserted_at, scopes, subject_type } = tokenInfo;
 
   return (
     <div className={styles.borderGrey}>
@@ -14,7 +14,10 @@ export function Token({ tokenInfo, onRevokeToken }) {
         <Row breakpointColumn="md" topMargin="md" childrenMarginR="xl">
           <div>
             <span>
-              <b>{subject_type.charAt(0).toUpperCase() + subject_type.slice(1)} Token</b>
+              <b>
+                {subject_type.charAt(0).toUpperCase() + subject_type.slice(1)}
+                <FormattedMessage id="tokens.token" defaultMessage="Token" />
+              </b>
             </span>
           </div>
           <div>
@@ -50,7 +53,7 @@ export function Token({ tokenInfo, onRevokeToken }) {
 }
 
 Token.propTypes = {
-  token: PropTypes.shape({
+  tokenInfo: PropTypes.shape({
     account_id: PropTypes.string,
     id: PropTypes.string,
     inserted_at: PropTypes.string,

@@ -111,7 +111,9 @@ class SceneUI extends Component {
               author: _author,
               a: chunks =>
                 url ? (
-                  <a href={url} target="_blank" rel="noopener noreferrer"> {chunks}
+                  <a href={url} target="_blank" rel="noopener noreferrer">
+                    {" "}
+                    {chunks}
                   </a>
                 ) : (
                   <>{chunks}</>

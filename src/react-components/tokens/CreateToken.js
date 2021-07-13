@@ -27,13 +27,13 @@ export const CreateToken = ({ scopes, scopeInfo, selectedScopes }) => (
             className={classNames(styleUtils.flexBasis50, styleUtils.margin0)}
             labelClassName={styles.radioLabel}
             value={1}
-            label="Account"
+            label={<FormattedMessage id="new-token.account" defaultMessage="Account" />}
           />
           <RadioInputOption
             labelClassName={styles.radioLabel}
             className={classNames(styleUtils.flexBasis50, styleUtils.margin0)}
             value={2}
-            label="App"
+            label={<FormattedMessage id="new-token.app" defaultMessage="App" />}
           />
         </RadioInputField>
       </Row>

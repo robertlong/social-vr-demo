@@ -34,6 +34,7 @@ const float kRefDistWidth = 0.05;
 float distance[MAX_DEBUG_SOURCES];
 vec2 center[MAX_DEBUG_SOURCES];
 float startOffset[MAX_DEBUG_SOURCES];
+float clampedGain[MAX_DEBUG_SOURCES];
 
 float att_linear(float x, float rolloff, float dref, float dmax) {
   return 1.0-(rolloff*((x-dref)/(dmax-dref)));
@@ -116,6 +117,9 @@ void main() {
     // Rotate to start drawing facing front
     ang -= 0.5;
     startOffset[i] = mod(ang, 1.0);
+
+    // Gain
+    clampedGain[i] = clamp(gain[i], 0.0, 1.0);
   }
 
   for (int i=0; i<count; i++) {
@@ -126,17 +130,17 @@ void main() {
     float innerStartAngle = startOffset[i] + innerAngle * 0.5;
     vec4 innerLayer = circle(center[i], distance[i], innerAngle, 10000.0, 1.0, colorInner, innerStartAngle);
     innerLayer = draw_att(distance[i], attenuation, innerLayer);
-    background = mix(background, innerLayer, innerLayer.a);
+    background = mix(background, innerLayer, innerLayer.a * clampedGain[i]);
 
     // Draw outer cone
     float outerAngle = coneOuterAngle[i] * kDegToRad * kInvPi * 0.5;
     float outerAngleDiffHalf = (outerAngle - innerAngle) * 0.5;
     vec4 outerLayer1 = circle(center[i], distance[i], outerAngleDiffHalf, 10000.0, 1.0, colorOuter, innerStartAngle + outerAngleDiffHalf);
     outerLayer1 = draw_att(distance[i], attenuation, outerLayer1);
-    background = mix(background, outerLayer1, outerLayer1.a);
+    background = mix(background, outerLayer1, outerLayer1.a * clampedGain[i]);
     vec4 outerLayer2 = circle(center[i], distance[i], outerAngleDiffHalf, 10000.0, 1.0, colorOuter, innerStartAngle - innerAngle);
     outerLayer2 = draw_att(distance[i], attenuation, outerLayer2);
-    background = mix(background, outerLayer2, outerLayer2.a * (clipped[i] ? 0.0 : 1.0));
+    background = mix(background, outerLayer2, outerLayer2.a * (clipped[i] ? 0.0 : 1.0) * clampedGain[i]);
   }
 
   for (int i=0; i<count; i++) {
@@ -145,11 +149,10 @@ void main() {
     background = mix(background, baseLayer, baseLayer.a);
 
     // Draw gain
-    float g = clamp(gain[i], 0.0, 1.0);
-    vec4 gainLayer = circle(center[i], distance[i], g, 1.0, 0.5, colorGain, startOffset[i]);
+    vec4 gainLayer = circle(center[i], distance[i], clampedGain[i], 1.0, 0.5, colorGain, startOffset[i]);
     background = mix(background, gainLayer, gainLayer.a);
     if (gain[i] > 1.0) {
-      vec4 overGainLayer = circle(center[i], distance[i], gain[i] - g, 1.0, 0.5, vec3(1.0, 0.0, 0.0), startOffset[i]);
+      vec4 overGainLayer = circle(center[i], distance[i], gain[i] -  clampedGain[i], 1.0, 0.5, vec3(1.0, 0.0, 0.0), startOffset[i]);
       background = mix(background, overGainLayer, overGainLayer.a);
     }
   } 

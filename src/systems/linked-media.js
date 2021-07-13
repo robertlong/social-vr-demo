@@ -49,7 +49,7 @@ AFRAME.registerSystem("linked-media", {
 
     // As a convenience, if elA is a video, we turn its volume off so we don't hear it twice
     if (elA.components["media-video"]) {
-      elA.setAttribute("media-video", "volume", 0);
+      elA.setAttribute("audio-params", "gain", 0);
     }
 
     this.handlers.push([elA, elB, handlerA, handlerB]);
@@ -64,8 +64,8 @@ AFRAME.registerSystem("linked-media", {
       }
 
       // As a convenience, if elA is a video, we restore its volume to 50% since we muted it upon link.
-      if (elA.components["media-video"]) {
-        elA.setAttribute("media-video", "volume", 0.5);
+      if (elA.components["audio-params"]) {
+        elA.setAttribute("audio-params", "gain", 0.5);
       }
     }
 

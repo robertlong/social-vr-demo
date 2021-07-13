@@ -47,7 +47,11 @@ export const RevealTokenModal = ({ token, selectedScopes, onClose }) => {
           inputClassName={classNames(styles.backgroundDarkGrey, styles.textWhite)}
           label={<FormattedMessage id="save-api-token.copy-label" defaultMessage="API Token" />}
           value={token.token}
-          description={<p><FormattedMessage id="save-api-token.copied" defaultMessage="Copied" /></p>}
+          description={
+            <p>
+              <FormattedMessage id="save-api-token.copied" defaultMessage="Copied" />
+            </p>
+          }
           afterInput={
             <Button preset="accent6" onClick={noop}>
               <FormattedMessage id="save-api-token.copy" defaultMessage="Copy" />:
