@@ -64,16 +64,16 @@ AFRAME.registerComponent("video-texture-source", {
     const sceneEl = this.el.sceneEl;
     const renderer = this.renderer || sceneEl.renderer;
 
-    const tmpVRFlag = renderer.vr.enabled;
+    const tmpXRFlag = renderer.xr.enabled;
     const tmpOnAfterRender = sceneEl.object3D.onAfterRender;
     delete sceneEl.object3D.onAfterRender;
-    renderer.vr.enabled = false;
+    renderer.xr.enabled = false;
 
     renderer.setRenderTarget(this.renderTarget);
     renderer.render(sceneEl.object3D, this.camera);
     renderer.setRenderTarget(null);
 
-    renderer.vr.enabled = tmpVRFlag;
+    renderer.xr.enabled = tmpXRFlag;
     sceneEl.object3D.onAfterRender = tmpOnAfterRender;
 
     this.lastRenderTime = time;

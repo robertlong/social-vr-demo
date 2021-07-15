@@ -1,4 +1,3 @@
-import "./webxr-bypass-hacks";
 import "./utils/theme";
 import "./utils/configs";
 import "./react-components/styles/global.scss";

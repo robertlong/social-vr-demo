@@ -64,7 +64,7 @@ function resizeShadowCameraFrustum(light, boundingBox) {
   verts[7].set(max.x, max.y, max.z);
 
   light.updateMatrices();
-  inverseLightMatrixWorld.getInverse(light.matrixWorld);
+  inverseLightMatrixWorld.copy(light.matrixWorld).invert();
 
   for (let i = 0; i < verts.length; i++) {
     verts[i].applyMatrix4(inverseLightMatrixWorld);

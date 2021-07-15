@@ -80,7 +80,7 @@ AFRAME.registerComponent("scene-preview-camera", {
       const fromRot = this.backwards ? this.targetRotation : this.startRotation;
       const toRot = this.backwards ? this.startRotation : this.targetRotation;
 
-      THREE.Quaternion.slerp(fromRot, toRot, newRot, t);
+      newRot.slerpQuaternions(fromRot, toRot, t);
 
       this.el.object3D.position.set(lerp(from.x, to.x, t), lerp(from.y, to.y, t), lerp(from.z, to.z, t));
 

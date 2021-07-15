@@ -6,8 +6,10 @@ import classNames from "classnames";
 import html2canvas from "html2canvas";
 import { coerceToUrl } from "../utils/media-utils";
 import { formatMessageBody } from "../utils/chat-message";
+import { createPlaneBufferGeometry } from "../utils/three-utils";
+import HubsTextureLoader from "../loaders/HubsTextureLoader";
 
-const textureLoader = new THREE.TextureLoader();
+const textureLoader = new HubsTextureLoader();
 
 const CHAT_MESSAGE_TEXTURE_SIZE = 1024;
 
@@ -130,7 +132,7 @@ export async function createInWorldLogMessage({ name, type, body }) {
     material.generateMipmaps = false;
     material.needsUpdate = true;
 
-    const geometry = new THREE.PlaneBufferGeometry(1, 1, 1, 1, texture.flipY);
+    const geometry = createPlaneBufferGeometry(1, 1, 1, 1, texture.flipY);
     const mesh = new THREE.Mesh(geometry, material);
     meshEntity.setObject3D("mesh", mesh);
     meshEntity.meshMaterial = material;

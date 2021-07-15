@@ -231,8 +231,22 @@ class UIRoot extends Component {
         window.setTimeout(() => {
           if (!this.props.isBotMode) {
             try {
-              this.props.scene.renderer.compileAndUploadMaterials(this.props.scene.object3D, this.props.scene.camera);
-            } catch {
+              this.props.scene.renderer.compile(this.props.scene.object3D, this.props.scene.camera);
+              this.props.scene.object3D.traverse(obj => {
+                if (!obj.material) {
+                  return;
+                }
+                const materials = Array.isArray(obj.material) ? obj.material : [obj.material];
+                for (const material of materials) {
+                  for (const prop in material) {
+                    if (material[prop] && material[prop].isTexture) {
+                      this.props.scene.renderer.initTexture(material[prop]);
+                    }
+                  }
+                }
+              });
+            } catch (e) {
+              console.error(e);
               this.props.exitScene(ExitReason.sceneError); // https://github.com/mozilla/hubs/issues/1950
             }
           }

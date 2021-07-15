@@ -110,9 +110,9 @@ THREE.Object3D.prototype.updateMatrix = function() {
   handleMatrixModification(this);
 };
 
-const applyMatrix = THREE.Object3D.prototype.applyMatrix;
-THREE.Object3D.prototype.applyMatrix = function() {
-  applyMatrix.apply(this, arguments);
+const applyMatrix4 = THREE.Object3D.prototype.applyMatrix4;
+THREE.Object3D.prototype.applyMatrix4 = function() {
+  applyMatrix4.apply(this, arguments);
   handleMatrixModification(this);
 };
 
@@ -252,7 +252,7 @@ THREE.Object3D.prototype.lookAt = (function() {
     if (parent) {
       m1.extractRotation(parent.matrixWorld);
       q1.setFromRotationMatrix(m1);
-      this.quaternion.premultiply(q1.inverse());
+      this.quaternion.premultiply(q1.invert());
     }
     this.matrixNeedsUpdate = true;
   };

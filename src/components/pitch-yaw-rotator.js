@@ -28,7 +28,7 @@ const rotatePitchAndYaw = (function() {
     q.copy(owq)
       .premultiply(pq)
       .premultiply(yq)
-      .premultiply(opq.inverse());
+      .premultiply(opq.invert());
     v.set(0, 1, 0).applyQuaternion(q);
     const newUpDot = v.dot(UP);
     v.set(0, 0, 1).applyQuaternion(q);

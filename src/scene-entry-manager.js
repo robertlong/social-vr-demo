@@ -109,7 +109,7 @@ export default class SceneEntryManager {
 
     // Delay sending entry event telemetry until VR display is presenting.
     (async () => {
-      while (enterInVR && !this.scene.renderer.vr.isPresenting()) {
+      while (enterInVR && !this.scene.renderer.xr.isPresenting) {
         await nextTick();
       }
 

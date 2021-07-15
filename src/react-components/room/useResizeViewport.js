@@ -66,8 +66,8 @@ export function useResizeViewport(viewportRef, store, scene) {
   useEffect(
     () => {
       const observer = new ResizeObserver(entries => {
-        const isPresenting = scene.renderer.vr.isPresenting();
-        const isVRPresenting = scene.renderer.vr.enabled && isPresenting;
+        const isPresenting = scene.renderer.xr.isPresenting;
+        const isVRPresenting = scene.renderer.xr.enabled && isPresenting;
 
         // Do not update renderer, if a camera or a canvas have not been injected.
         // In VR mode, three handles canvas resize based on the dimensions returned by

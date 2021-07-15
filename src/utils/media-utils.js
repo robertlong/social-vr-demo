@@ -440,10 +440,8 @@ export async function createImageTexture(url, filter) {
 
     texture = new THREE.CanvasTexture(canvas);
   } else {
-    texture = new THREE.Texture();
-
     try {
-      await textureLoader.loadTextureAsync(texture, url);
+      texture = await textureLoader.loadAsync(url);
     } catch (e) {
       throw new Error(`'${url}' could not be fetched (Error code: ${e.status}; Response: ${e.statusText})`);
     }

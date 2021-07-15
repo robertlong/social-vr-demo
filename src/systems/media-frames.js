@@ -1,6 +1,7 @@
 import { MediaType } from "../utils/media-utils";
 import { TEXTURES_FLIP_Y } from "../loaders/HubsTextureLoader";
 import { applyPersistentSync } from "../utils/permissions-utils";
+import { createPlaneBufferGeometry } from "../utils/three-utils";
 
 // TODO better handling for 3d objects
 function scaleForAspectFit(containerSize, itemSize) {
@@ -182,7 +183,7 @@ AFRAME.registerComponent("media-frame", {
     previewMaterial.transparent = true;
     previewMaterial.opacity = 0.5;
 
-    const geometry = new THREE.PlaneBufferGeometry(1, 1, 1, 1, TEXTURES_FLIP_Y);
+    const geometry = createPlaneBufferGeometry(1, 1, 1, 1, TEXTURES_FLIP_Y);
     const previewMesh = new THREE.Mesh(geometry, previewMaterial);
     previewMesh.visible = false;
     this.el.setObject3D("preview", previewMesh);

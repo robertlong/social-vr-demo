@@ -64,7 +64,7 @@ const orbit = (function() {
     if (!target.parent) {
       // add dummy object to the scene, if this is the first time we call this function
       AFRAME.scenes[0].object3D.add(target);
-      target.applyMatrix(IDENTITY); // make sure target gets updated at least once for our matrix optimizations
+      target.applyMatrix4(IDENTITY); // make sure target gets updated at least once for our matrix optimizations
     }
     pivot.updateMatrices();
     decompose(pivot.matrixWorld, owp, owq);
@@ -107,7 +107,7 @@ const moveRigSoCameraLooksAtPivot = (function() {
     if (!target.parent) {
       // add dummy object to the scene, if this is the first time we call this function
       AFRAME.scenes[0].object3D.add(target);
-      target.applyMatrix(IDENTITY); // make sure target gets updated at least once for our matrix optimizations
+      target.applyMatrix4(IDENTITY); // make sure target gets updated at least once for our matrix optimizations
     }
 
     pivot.updateMatrices();
@@ -271,7 +271,7 @@ export class CameraSystem {
     this.pivot = pivot;
 
     const vrMode = scene.is("vr-mode");
-    const camera = vrMode ? scene.renderer.vr.getCamera(scene.camera) : scene.camera;
+    const camera = vrMode ? scene.renderer.xr.getCamera(scene.camera) : scene.camera;
     this.snapshot.mask = camera.layers.mask;
     if (vrMode) {
       this.snapshot.mask0 = camera.cameras[0].layers.mask;
@@ -371,7 +371,7 @@ export class CameraSystem {
 
     const scene = AFRAME.scenes[0];
     const vrMode = scene.is("vr-mode");
-    const camera = vrMode ? scene.renderer.vr.getCamera(scene.camera) : scene.camera;
+    const camera = vrMode ? scene.renderer.xr.getCamera(scene.camera) : scene.camera;
     camera.layers.set(CAMERA_LAYER_INSPECT);
     if (vrMode) {
       camera.cameras[0].layers.set(CAMERA_LAYER_INSPECT);
@@ -386,7 +386,7 @@ export class CameraSystem {
     }
     const scene = AFRAME.scenes[0];
     const vrMode = scene.is("vr-mode");
-    const camera = vrMode ? scene.renderer.vr.getCamera(scene.camera) : scene.camera;
+    const camera = vrMode ? scene.renderer.xr.getCamera(scene.camera) : scene.camera;
     camera.layers.mask = this.snapshot.mask;
     if (vrMode) {
       camera.cameras[0].layers.mask = this.snapshot.mask0;

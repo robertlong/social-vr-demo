@@ -420,7 +420,12 @@ AFRAME.registerSystem("userinput", {
         inputSource.gamepad.isWebXRGamepad = true;
         inputSource.gamepad.targetRaySpace = inputSource.targetRaySpace;
         inputSource.gamepad.primaryProfile = inputSource.profiles[0];
-        inputSource.gamepad.hand = inputSource.handedness;
+        // inputSource.gamepad.hand is a read-only property and still an experimental property.
+        // We read this property elsewhere. Only Firefox supports this property now.
+        // So we set this property if it's undefined.
+        if (inputSource.gamepad.hand === undefined) {
+          inputSource.gamepad.hand = inputSource.handedness;
+        }
         gamepadConnected(inputSource);
       }
     };

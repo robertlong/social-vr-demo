@@ -2,7 +2,11 @@ import React, { Component } from "react";
 import PropTypes from "prop-types";
 import { injectIntl, FormattedMessage } from "react-intl";
 import classNames from "classnames";
-import "three/examples/js/controls/OrbitControls";
+
+// It seems we need to use require to import modules
+// under the three/examples/js to avoid tree shaking
+// in webpack production mode.
+require("three/examples/js/controls/OrbitControls");
 
 import { createDefaultEnvironmentMap } from "../components/environment-map";
 import { loadGLTF } from "../components/gltf-model-plus";
@@ -34,8 +38,7 @@ function createRenderer(canvas, alpha = false, useDevicePixelRatio = true) {
   });
 
   const renderer = new THREE.WebGLRenderer({ alpha, canvas, context, forceWebVR: true });
-  renderer.gammaOutput = true;
-  renderer.gammaFactor = 2.2;
+  renderer.outputEncoding = THREE.sRGBEncoding;
   renderer.physicallyCorrectLights = true;
   if (useDevicePixelRatio) {
     renderer.setPixelRatio(window.devicePixelRatio);

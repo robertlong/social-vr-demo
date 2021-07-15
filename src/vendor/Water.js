@@ -319,19 +319,19 @@ THREE.Water = function(geometry, options) {
 
     const currentRenderTarget = renderer.getRenderTarget();
 
-    const currentVrEnabled = renderer.vr.enabled;
+    const currentXrEnabled = renderer.xr.enabled;
     const currentShadowAutoUpdate = renderer.shadowMap.autoUpdate;
 
     scope.visible = false;
 
-    renderer.vr.enabled = false; // Avoid camera modification and recursion
+    renderer.xr.enabled = false; // Avoid camera modification and recursion
     renderer.shadowMap.autoUpdate = false; // Avoid re-computing shadows
 
     renderer.render(scene, mirrorCamera, renderTarget, true);
 
     scope.visible = true;
 
-    renderer.vr.enabled = currentVrEnabled;
+    renderer.xr.enabled = currentXrEnabled;
     renderer.shadowMap.autoUpdate = currentShadowAutoUpdate;
 
     renderer.setRenderTarget(currentRenderTarget);
